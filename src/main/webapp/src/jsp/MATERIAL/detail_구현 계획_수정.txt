@@ -1,0 +1,487 @@
+# Mat_detail.jsp 구현 계획 (최종 수정본)
+
+## 1. 페이지 목적
+- **재고 상세 정보** 표시
+- **재고 이력** 및 **통계** 정보 제공 (하드코딩)
+- **관련 제품 비교 그래프** 제공
+- **수정/삭제** 액션 수행
+
+## 2. URL 구조
+- **상세보기**: `Mat_detail.jsp?code=MA0001`
+- **수정**: `Mat_form.jsp?code=MA0001` (기존)
+- **삭제**: JavaScript로 확인 후 처리
+
+## 3. 표시 정보
+
+### 3.1 기본 정보 (MaterialDTO + StandardDTO + UsersDTO)
+- **재고코드**: MA0001
+- **제품코드**: RA001
+- **제품명**: 신선 오이
+- **제품유형**: 원자재
+- **재고량**: 25
+- **단위**: kg
+- **담당자**: 김재고
+- **등록일**: 2024-01-15
+- **수정일**: 2024-01-20
+
+### 3.2 추가 정보
+- **재고 상태**: 부족/정상/과다 (색상 배지)
+- **재고 이력**: 하드코딩된 샘플 데이터 (5건)
+- **관련 제품 비교 그래프**: 같은 제품의 다른 재고들과 비교
+- **통계 정보**: 재고 현황, 제품 유형별, 재고량 통계
+
+## 4. UI 구성
+
+### 4.1 헤더 섹션
+- **재고코드 + 제품명**: "MA0001 - 신선 오이"
+- **재고 상태 배지**: 부족/정상/과다
+- **액션 버튼**: 수정, 삭제, 목록으로
+
+### 4.2 기본 정보 카드
+- **카드 형태**: 깔끔한 박스 레이아웃
+- **정보 표시**: 재고코드, 제품코드, 제품명, 제품유형, 재고량, 단위, 담당자, 등록일, 수정일
+- **상태 표시**: 재고 상태 배지
+
+### 4.3 관련 제품 비교 그래프
+- **Chart.js 막대 그래프**: 같은 제품의 다른 재고들과 비교
+- **X축**: 재고코드 (MA0001, MA0002, MA0003...)
+- **Y축**: 재고량
+- **색상**: 재고 상태별 (부족: 빨강, 정상: 파랑, 과다: 초록)
+- **툴팁**: 제품명, 재고량, 상태 표시
+
+### 4.4 재고 이력 테이블 (하드코딩)
+- **최근 5건**: 입고/출고 기록 (하드코딩)
+- **컬럼**: 날짜, 구분, 수량, 담당자, 비고
+- **구분**: 입고/출고/조정
+
+### 4.5 통계 정보 카드
+- **재고 현황 통계**: 전체, 부족, 정상, 과다
+- **제품 유형별 통계**: 원자재, 반제품, 완제품
+- **재고량 통계**: 평균, 최대, 최소, 총합
+
+## 5. 그래프 구성
+
+### 5.1 관련 제품 비교 그래프
+```javascript
+// Chart.js 막대 그래프
+const ctx = document.getElementById('comparisonChart').getContext('2d');
+const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['MA0001', 'MA0002', 'MA0003', 'MA0004', 'MA0005'],
+        datasets: [{
+            label: '재고량',
+            data: [25, 45, 30, 60, 40],
+            backgroundColor: ['#dc3545', '#007bff', '#28a745', '#ffc107', '#6c757d']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: '같은 제품의 다른 재고 비교'
+            }
+        }
+    }
+});
+```
+
+## 6. 샘플 데이터
+
+### 6.1 재고 이력 (하드코딩)
+- **2024-01-20**: 출고, -5kg, 김재고, 생산 사용
+- **2024-01-18**: 입고, +20kg, 이공정, 신규 구매
+- **2024-01-15**: 조정, +10kg, 박품질, 재고 정리
+- **2024-01-12**: 출고, -3kg, 김재고, 품질 검사
+- **2024-01-10**: 입고, +15kg, 최관리, 정기 구매
+
+### 6.2 관련 제품 (같은 제품의 다른 재고)
+- **MA0001**: 신선 오이, 25kg, 부족
+- **MA0002**: 신선 오이, 45kg, 정상
+- **MA0003**: 신선 오이, 30kg, 정상
+- **MA0004**: 신선 오이, 60kg, 정상
+- **MA0005**: 신선 오이, 40kg, 정상
+
+### 6.3 통계 정보 (하드코딩)
+- **전체 재고**: 13개
+- **재고 부족**: 2개 (15%)
+- **정상 재고**: 11개 (85%)
+- **재고 과다**: 0개 (0%)
+- **원자재**: 6개 (46%)
+- **반제품**: 4개 (31%)
+- **완제품**: 3개 (23%)
+- **평균 재고량**: 45.2kg
+- **최대 재고량**: 100kg
+- **최소 재고량**: 15kg
+- **총 재고량**: 588kg
+
+## 7. 페이지 연결
+
+### 7.1 네비게이션
+- **목록으로**: `Mat_list.jsp`
+- **수정**: `Mat_form.jsp?code=MA0001`
+- **삭제**: JavaScript 확인 후 처리
+
+### 7.2 액션 버튼
+- **수정 버튼**: 파란색, 수정 페이지로 이동
+- **삭제 버튼**: 빨간색, 확인 후 삭제 처리
+- **목록 버튼**: 회색, 목록 페이지로 이동
+
+## 8. 기술 구현
+
+### 8.1 JSP 구조
+- **헤더/사이드바**: 기존 include 사용
+- **메인 컨텐츠**: 상세 정보 표시
+- **Chart.js**: 그래프 렌더링
+- **JavaScript**: 액션 처리
+
+### 8.2 CSS 스타일
+- **카드 레이아웃**: 깔끔한 박스 디자인
+- **상태 배지**: 색상별 구분
+- **그래프 영역**: 적절한 크기와 여백
+- **반응형**: 모바일 대응
+
+### 8.3 JavaScript 기능
+- **그래프 렌더링**: Chart.js 초기화
+- **삭제 확인**: 사용자 확인 후 처리
+- **페이지 이동**: 버튼 클릭 시 이동
+
+## 9. DB 연동 구조
+
+### 9.1 서버 사이드 아키텍처
+```
+Controller (Servlet) → Service → DAO → DB
+```
+
+#### 9.1.1 Controller Layer
+- **MaterialDetailServlet**: GET 요청 처리
+- **URL 매핑**: `/material/detail`
+- **파라미터**: `code` (materialCode)
+- **응답**: JSP로 포워딩
+
+#### 9.1.2 Service Layer
+- **MaterialService**: 비즈니스 로직 처리
+- **메서드**:
+  - `getMaterial(String materialCode)`: 재고 정보 조회
+  - `getStandard(String standardCode)`: 제품 정보 조회
+  - `getUser(String employeeNo)`: 담당자 정보 조회
+  - `getRelatedMaterials(String standardCode)`: 관련 제품 조회
+  - `getAllMaterials()`: 전체 재고 목록 조회
+
+#### 9.1.3 DAO Layer
+- **MaterialDAO**: DB 접근 로직
+- **StandardDAO**: 제품 정보 조회
+- **UsersDAO**: 담당자 정보 조회
+
+### 9.2 데이터베이스 구조
+
+#### 9.2.1 테이블 관계 (3개 테이블만 사용)
+```sql
+-- 재고 테이블 (기본)
+MATERIAL (
+    materialCode VARCHAR2(10) PRIMARY KEY,  -- MA0001, MA0002...
+    standardCode VARCHAR2(10) NOT NULL,     -- FK → STANDARD.standardCode
+    employeeNo VARCHAR2(10) NOT NULL,       -- FK → USERS.employeeNo
+    maQuantity NUMBER(10,2) NOT NULL,       -- 재고량
+    maCreationDate DATE DEFAULT SYSDATE,    -- 등록일
+    maUpdateDate DATE DEFAULT SYSDATE       -- 수정일
+);
+
+-- 제품 기준 테이블 (FK)
+STANDARD (
+    standardCode VARCHAR2(10) PRIMARY KEY,  -- RA001, SE001, FI001...
+    stType VARCHAR2(20) NOT NULL,           -- 원자재, 반제품, 완제품
+    stName VARCHAR2(100) NOT NULL,          -- 제품명
+    stQuantity NUMBER(10,2),                -- 기준 수량
+    stUnit VARCHAR2(10),                    -- 단위
+    createDate DATE DEFAULT SYSDATE,
+    updateDate DATE DEFAULT SYSDATE
+);
+
+-- 사용자 테이블 (FK)
+USERS (
+    employeeNo VARCHAR2(10) PRIMARY KEY,    -- EMP001, EMP002...
+    employeeName VARCHAR2(50) NOT NULL,     -- 담당자명
+    department VARCHAR2(50),                -- 부서
+    position VARCHAR2(50),                  -- 직급
+    createDate DATE DEFAULT SYSDATE,
+    updateDate DATE DEFAULT SYSDATE
+);
+```
+
+#### 9.2.2 시퀀스
+```sql
+-- 재고 코드 시퀀스
+CREATE SEQUENCE SEQ_MATERIAL_ID
+    START WITH 1
+    INCREMENT BY 1
+    MAXVALUE 9999
+    NOCYCLE;
+```
+
+#### 9.2.3 FK 제약조건
+```sql
+-- 재고 → 제품 기준
+ALTER TABLE MATERIAL 
+ADD CONSTRAINT FK_MATERIAL_STANDARD 
+FOREIGN KEY (standardCode) REFERENCES STANDARD(standardCode);
+
+-- 재고 → 사용자
+ALTER TABLE MATERIAL 
+ADD CONSTRAINT FK_MATERIAL_USERS 
+FOREIGN KEY (employeeNo) REFERENCES USERS(employeeNo);
+```
+
+### 9.3 데이터 조회 쿼리
+
+#### 9.3.1 재고 정보 조회
+```sql
+SELECT materialCode, standardCode, employeeNo, maQuantity, maCreationDate, maUpdateDate
+FROM MATERIAL 
+WHERE materialCode = ?
+```
+
+#### 9.3.2 제품 정보 조회
+```sql
+SELECT standardCode, stType, stName, stQuantity, stUnit, createDate, updateDate
+FROM STANDARD 
+WHERE standardCode = ?
+```
+
+#### 9.3.3 담당자 정보 조회
+```sql
+SELECT employeeNo, employeeName, department, position, createDate, updateDate
+FROM USERS 
+WHERE employeeNo = ?
+```
+
+#### 9.3.4 관련 제품 조회 (같은 제품의 다른 재고)
+```sql
+SELECT materialCode, standardCode, employeeNo, maQuantity, maCreationDate, maUpdateDate
+FROM MATERIAL 
+WHERE standardCode = ?
+ORDER BY maQuantity DESC
+```
+
+#### 9.3.5 전체 재고 목록 조회 (통계 계산용)
+```sql
+SELECT materialCode, standardCode, employeeNo, maQuantity, maCreationDate, maUpdateDate
+FROM MATERIAL 
+ORDER BY materialCode
+```
+
+### 9.4 기존 DTO 클래스 활용
+
+#### 9.4.1 MaterialDTO (기존)
+```java
+public class MaterialDTO {
+    private String materialCode;        // MA0001, MA0002...
+    private String standardCode;        // FK → StandardDTO.standardCode
+    private String employeeNo;          // FK → UsersDTO.employeeNo
+    private BigDecimal maQuantity;      // 재고량
+    private Date maCreationDate;        // 등록일
+    private Date maUpdateDate;          // 수정일
+    
+    // getters, setters, constructors
+}
+```
+
+#### 9.4.2 StandardDTO (기존)
+```java
+public class StandardDTO {
+    private String standardCode;        // RA001, SE001, FI001...
+    private String stType;              // 원자재, 반제품, 완제품
+    private String stName;              // 제품명
+    private BigDecimal stQuantity;      // 기준 수량
+    private String stUnit;              // 단위
+    private Date createDate;
+    private Date updateDate;
+    
+    // getters, setters, constructors
+}
+```
+
+#### 9.4.3 UsersDTO (기존)
+```java
+public class UsersDTO {
+    private String employeeNo;          // EMP001, EMP002...
+    private String employeeName;        // 담당자명
+    private String department;          // 부서
+    private String position;            // 직급
+    private Date createDate;
+    private Date updateDate;
+    
+    // getters, setters, constructors
+}
+```
+
+#### 9.4.4 데이터 조합 방식
+- **재고 상세 정보**: MaterialDTO + StandardDTO + UsersDTO 개별 조회 후 JSP에서 조합
+- **관련 제품**: MaterialDTO 리스트 (같은 standardCode) + StandardDTO 1개
+- **재고 이력**: 하드코딩된 샘플 데이터
+- **통계 정보**: MaterialDTO 리스트에서 계산
+
+### 9.5 서버 사이드 구현
+
+#### 9.5.1 MaterialDetailServlet
+```java
+@WebServlet("/material/detail")
+public class MaterialDetailServlet extends HttpServlet {
+    private MaterialService materialService;
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        String materialCode = request.getParameter("code");
+        
+        if (materialCode == null || materialCode.isEmpty()) {
+            response.sendRedirect("Mat_list.jsp");
+            return;
+        }
+        
+        try {
+            // 재고 정보 조회
+            MaterialDTO material = materialService.getMaterial(materialCode);
+            if (material == null) {
+                response.sendRedirect("Mat_list.jsp");
+                return;
+            }
+            
+            // 제품 정보 조회
+            StandardDTO standard = materialService.getStandard(material.getStandardCode());
+            
+            // 담당자 정보 조회
+            UsersDTO user = materialService.getUser(material.getEmployeeNo());
+            
+            // 관련 제품 조회 (같은 제품의 다른 재고)
+            List<MaterialDTO> relatedMaterials = 
+                materialService.getRelatedMaterials(material.getStandardCode());
+            
+            // 전체 재고 목록 (통계 계산용)
+            List<MaterialDTO> allMaterials = materialService.getAllMaterials();
+            
+            // JSP로 데이터 전달
+            request.setAttribute("material", material);
+            request.setAttribute("standard", standard);
+            request.setAttribute("user", user);
+            request.setAttribute("relatedMaterials", relatedMaterials);
+            request.setAttribute("allMaterials", allMaterials);
+            
+            request.getRequestDispatcher("/src/jsp/MATERIAL/Mat_detail.jsp")
+                   .forward(request, response);
+                   
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("Mat_list.jsp");
+        }
+    }
+}
+```
+
+#### 9.5.2 MaterialService
+```java
+public class MaterialService {
+    private MaterialDAO materialDAO;
+    private StandardDAO standardDAO;
+    private UsersDAO usersDAO;
+    
+    public MaterialDTO getMaterial(String materialCode) {
+        return materialDAO.selectMaterial(materialCode);
+    }
+    
+    public StandardDTO getStandard(String standardCode) {
+        return standardDAO.selectStandard(standardCode);
+    }
+    
+    public UsersDTO getUser(String employeeNo) {
+        return usersDAO.selectUser(employeeNo);
+    }
+    
+    public List<MaterialDTO> getRelatedMaterials(String standardCode) {
+        return materialDAO.selectMaterialsByStandardCode(standardCode);
+    }
+    
+    public List<MaterialDTO> getAllMaterials() {
+        return materialDAO.selectAllMaterials();
+    }
+}
+```
+
+#### 9.5.3 MaterialDAO
+```java
+public class MaterialDAO {
+    private Connection conn;
+    
+    public MaterialDTO selectMaterial(String materialCode) {
+        String sql = "SELECT materialCode, standardCode, employeeNo, maQuantity, maCreationDate, maUpdateDate " +
+                    "FROM MATERIAL WHERE materialCode = ?";
+        
+        // PreparedStatement로 쿼리 실행
+        // ResultSet을 MaterialDTO로 변환
+        // return materialDTO;
+    }
+    
+    public List<MaterialDTO> selectMaterialsByStandardCode(String standardCode) {
+        String sql = "SELECT materialCode, standardCode, employeeNo, maQuantity, maCreationDate, maUpdateDate " +
+                    "FROM MATERIAL WHERE standardCode = ? ORDER BY maQuantity DESC";
+        
+        // PreparedStatement로 쿼리 실행
+        // ResultSet을 MaterialDTO 리스트로 변환
+        // return materialList;
+    }
+    
+    public List<MaterialDTO> selectAllMaterials() {
+        String sql = "SELECT materialCode, standardCode, employeeNo, maQuantity, maCreationDate, maUpdateDate " +
+                    "FROM MATERIAL ORDER BY materialCode";
+        
+        // PreparedStatement로 쿼리 실행
+        // ResultSet을 MaterialDTO 리스트로 변환
+        // return materialList;
+    }
+}
+```
+
+#### 9.5.4 StandardDAO
+```java
+public class StandardDAO {
+    private Connection conn;
+    
+    public StandardDTO selectStandard(String standardCode) {
+        String sql = "SELECT standardCode, stType, stName, stQuantity, stUnit, createDate, updateDate " +
+                    "FROM STANDARD WHERE standardCode = ?";
+        
+        // PreparedStatement로 쿼리 실행
+        // ResultSet을 StandardDTO로 변환
+        // return standardDTO;
+    }
+}
+```
+
+#### 9.5.5 UsersDAO
+```java
+public class UsersDAO {
+    private Connection conn;
+    
+    public UsersDTO selectUser(String employeeNo) {
+        String sql = "SELECT employeeNo, employeeName, department, position, createDate, updateDate " +
+                    "FROM USERS WHERE employeeNo = ?";
+        
+        // PreparedStatement로 쿼리 실행
+        // ResultSet을 UsersDTO로 변환
+        // return userDTO;
+    }
+}
+```
+
+## 10. 향후 확장 계획
+
+### 10.1 추가 기능
+- **알림 기능**: 재고 부족 시 알림
+- **엑셀 내보내기**: 재고 현황 다운로드
+- **인쇄 기능**: 재고 상세 정보 인쇄
+
+### 10.2 성능 최적화
+- **캐싱**: 자주 조회되는 통계 정보
+- **페이징**: 대량 데이터 처리
+- **인덱싱**: DB 쿼리 최적화
