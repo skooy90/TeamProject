@@ -16,7 +16,7 @@ public class WorkDTO {
     private Timestamp woEnd;        // 작업 종료일
     private Date createDate;        // 생성일
     private Date updateDate;        // 수정일
-    
+    private String stName; 
     // Getter & Setter
     public String getWorkNo() { return workNo; }
     public void setWorkNo(String workNo) { this.workNo = workNo; }
@@ -53,6 +53,10 @@ public class WorkDTO {
     
     public Date getUpdateDate() { return updateDate; }
     public void setUpdateDate(Date updateDate) { this.updateDate = updateDate; }
+    
+    public String getStName() { return stName; } // 쪼인
+    public void setStName(String stName) { this.stName = stName; }
+
     
     @Override
     public String toString() {

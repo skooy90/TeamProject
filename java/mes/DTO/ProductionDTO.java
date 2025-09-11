@@ -11,7 +11,8 @@ public class ProductionDTO {
     private int prTarget;           // 생산 목표량
     private int prCompleted;        // 생산 완료량
     private Date createDate;        // 생성일
-    private Date updateDate;        // 수정일
+    private Date updateDate;   		// 수정일
+    private String stName;
     
     // Getter & Setter
     public String getProductionNo() { return productionNo; }
@@ -40,6 +41,9 @@ public class ProductionDTO {
     
     public Date getUpdateDate() { return updateDate; }
     public void setUpdateDate(Date updateDate) { this.updateDate = updateDate; }
+    
+    public String getStName() { return stName; }
+    public void setStName(String stName) { this.stName = stName; }
     
     @Override
     public String toString() {

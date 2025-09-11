@@ -5,7 +5,10 @@ import mes.util.DBManager;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WorkDAO {
 	private WorkDAO() {
@@ -17,40 +20,38 @@ public class WorkDAO {
 		return instance;
 	}
 
+	
+	private static final String WORK_SELECT =
+		    "SELECT DISTINCT " +
+		    "  w.WORK_NO, w.PRODUCTION_NO, w.STANDARD_CODE, s.ST_NAME, " +
+		    "  w.EMPLOYEE_NO, w.WO_SCHEDULE, w.WO_QUANTITY, w.WO_STATUS, " +
+		    "  w.WO_COMPLETED, w.WO_START, w.WO_END, w.CREATE_DATE, w.UPDATE_DATE " +
+		    "FROM WORK w " +
+		    "JOIN STANDARD s ON s.STANDARD_CODE = w.STANDARD_CODE ";
+	
 	// 전체 조회
 	public List<WorkDTO> findAll() {
-		String sql = "SELECT * FROM WORK ORDER BY CREATE_DATE DESC";
-		List<WorkDTO> list = new ArrayList<>();
-
-		try (Connection conn = DBManager.getConnection();
-				PreparedStatement ps = conn.prepareStatement(sql);
-				ResultSet rs = ps.executeQuery()) {
-
-			while (rs.next()) {
-				WorkDTO w = mapResultSet(rs);
-				list.add(w);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
+	    String sql = WORK_SELECT + " ORDER BY w.CREATE_DATE DESC";
+	    List<WorkDTO> list = new ArrayList<>();
+	    try (Connection c = DBManager.getConnection();
+	         PreparedStatement ps = c.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+	        while (rs.next()) list.add(mapResultSet(rs));
+	    } catch (Exception e) { e.printStackTrace(); }
+	    return list;
 	}
 
 	// 단건 조회
 	public WorkDTO findByNo(String workNo) {
-		String sql = "SELECT * FROM WORK WHERE WORK_NO = ?";
-		try (Connection conn = DBManager.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-			ps.setString(1, workNo);
-			try (ResultSet rs = ps.executeQuery()) {
-				if (rs.next()) {
-					return mapResultSet(rs);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	    String sql = WORK_SELECT + " WHERE w.WORK_NO = ?";
+	    try (Connection c = DBManager.getConnection();
+	         PreparedStatement ps = c.prepareStatement(sql)) {
+	        ps.setString(1, workNo);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) return mapResultSet(rs);
+	        }
+	    } catch (Exception e) { e.printStackTrace(); }
+	    return null;
 	}
 
 	// 등록
@@ -138,20 +139,21 @@ public class WorkDAO {
 
 	// ResultSet → DTO 매핑
 	private WorkDTO mapResultSet(ResultSet rs) throws SQLException {
-		WorkDTO w = new WorkDTO();
-		w.setWorkNo(rs.getString("WORK_NO"));
-		w.setProductionNo(rs.getString("PRODUCTION_NO"));
-		w.setStandardCode(rs.getString("STANDARD_CODE"));
-		w.setEmployeeNo(rs.getString("EMPLOYEE_NO"));
-		w.setWoSchedule(rs.getDate("WO_SCHEDULE"));
-		w.setWoQuantity(rs.getInt("WO_QUANTITY"));
-		w.setWoStatus(rs.getString("WO_STATUS"));
-		w.setWoCompleted(rs.getInt("WO_COMPLETED"));
-		w.setWoStart(rs.getTimestamp("WO_START"));
-		w.setWoEnd(rs.getTimestamp("WO_END"));
-		w.setCreateDate(rs.getDate("CREATE_DATE"));
-		w.setUpdateDate(rs.getDate("UPDATE_DATE"));
-		return w;
+	    WorkDTO w = new WorkDTO();
+	    w.setWorkNo(rs.getString("WORK_NO"));
+	    w.setProductionNo(rs.getString("PRODUCTION_NO"));
+	    w.setStandardCode(rs.getString("STANDARD_CODE"));
+	    w.setStName(rs.getString("ST_NAME"));          // ✅ 제품명 매핑
+	    w.setEmployeeNo(rs.getString("EMPLOYEE_NO"));
+	    w.setWoSchedule(rs.getDate("WO_SCHEDULE"));
+	    w.setWoQuantity(rs.getInt("WO_QUANTITY"));
+	    w.setWoStatus(rs.getString("WO_STATUS"));
+	    w.setWoCompleted(rs.getInt("WO_COMPLETED"));
+	    w.setWoStart(rs.getTimestamp("WO_START"));
+	    w.setWoEnd(rs.getTimestamp("WO_END"));
+	    w.setCreateDate(rs.getDate("CREATE_DATE"));
+	    w.setUpdateDate(rs.getDate("UPDATE_DATE"));
+	    return w;
 	}
 
 	public String peekNextNo() {
@@ -166,4 +168,62 @@ public class WorkDAO {
 		}
 		return null;
 	}
+	
+	public List<WorkDTO> findForQuality() {
+	    String sql =
+	        "SELECT w.WORK_NO, w.STANDARD_CODE, s.ST_NAME, " +
+	        "       NVL(w.WO_COMPLETED,0) AS WO_COMPLETED " +
+	        "  FROM WORK w " +
+	        "  JOIN STANDARD s ON s.STANDARD_CODE = w.STANDARD_CODE " +
+	        " ORDER BY w.UPDATE_DATE DESC";
+	    List<WorkDTO> list = new ArrayList<>();
+	    try (Connection c = DBManager.getConnection();
+	         PreparedStatement ps = c.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+	        while (rs.next()) {
+	            WorkDTO d = new WorkDTO();
+	            d.setWorkNo(rs.getString("WORK_NO"));
+	            d.setStandardCode(rs.getString("STANDARD_CODE"));
+	            d.setWoCompleted(rs.getInt("WO_COMPLETED"));
+	            d.setStName(rs.getString("ST_NAME")); // DTO에 stName 필드(제품명) 하나 추가하세요
+	            list.add(d);
+	        }
+	    } catch (Exception e) { e.printStackTrace(); }
+	    return list;
+	}
+	
+	public String findStandardCodeByWorkNo(String workNo) {
+	    String sql = "SELECT STANDARD_CODE FROM WORK WHERE WORK_NO = ?";
+	    try (Connection c = DBManager.getConnection();
+	         PreparedStatement ps = c.prepareStatement(sql)) {
+	        ps.setString(1, workNo);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) return rs.getString(1);
+	        }
+	    } catch (Exception e) { e.printStackTrace(); }
+	    return null;
+	}
+	
+	public List<Map<String,Object>> findLastNForChart(int n){
+		  String sql =
+		    "SELECT work_no, wo_quantity, wo_completed " +
+		    "FROM (SELECT * FROM work ORDER BY create_date DESC) WHERE ROWNUM<=?";
+		  List<Map<String,Object>> out=new ArrayList<>();
+		  try(var c=DBManager.getConnection();
+		      var ps=c.prepareStatement(sql)){
+		    ps.setInt(1,n);
+		    try(var rs=ps.executeQuery()){
+		      while(rs.next()){
+		        Map<String,Object> m=new HashMap<>();
+		        m.put("no", rs.getString(1));
+		        m.put("q",  rs.getInt(2));
+		        m.put("c",  rs.getInt(3));
+		        out.add(m);
+		      }
+		    }
+		  }catch(Exception e){e.printStackTrace();}
+		  Collections.reverse(out);
+		  return out;
+		}
+	
 }

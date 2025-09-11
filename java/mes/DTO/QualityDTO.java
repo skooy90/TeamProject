@@ -15,7 +15,8 @@ public class QualityDTO {
     private Timestamp inspectionDate;   // 검사일시
     private Date createDate;            // 생성일
     private Date updateDate;            // 수정일
-    
+    private String stName;
+
     // Getter & Setter
     public String getQualityNo() { return qualityNo; }
     public void setQualityNo(String qualityNo) { this.qualityNo = qualityNo; }
@@ -49,6 +50,9 @@ public class QualityDTO {
     
     public Date getUpdateDate() { return updateDate; }
     public void setUpdateDate(Date updateDate) { this.updateDate = updateDate; }
+    
+    public String getStName() { return stName; }
+    public void setStName(String stName) { this.stName = stName; }
     
     @Override
     public String toString() {
