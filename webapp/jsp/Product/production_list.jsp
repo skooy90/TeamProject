@@ -9,7 +9,8 @@
 <meta charset="UTF-8">
 <title>생산관리</title>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-   <link rel="stylesheet" href="${pageContext.request.contextPath}/src/Header_Side/style.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/src/Header_Side/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -122,36 +123,39 @@ tbody tr:hover {
 
 /* 가독성을 위한 너비 가이드(필요 시 조절) */
 th:nth-child(1), td:nth-child(1) {
-	width: 120px;
+	width: 110px;
 } /* 생산번호 */
 th:nth-child(2), td:nth-child(2) {
-	width: 110px;
+	width: 100px;
 } /* 제품코드 */
-th:nth-child(3), td:nth-child(3), th:nth-child(4), td:nth-child(4) {
-	width: 130px;
-} /* 날짜들 */
-th:nth-child(5), td:nth-child(5), th:nth-child(6), td:nth-child(6) {
+th:nth-child(3), td:nth-child(3) {
+	width: 140px;
+} /* 제품명 */
+th:nth-child(4), td:nth-child(4), th:nth-child(5), td:nth-child(5) {
 	width: 120px;
-} /* 수량 */
-th:nth-child(7), td:nth-child(7) {
+} /* 시작/종료일 */
+th:nth-child(6), td:nth-child(6), th:nth-child(7), td:nth-child(7) {
 	width: 110px;
+} /* 목표/완료량 */
+th:nth-child(8), td:nth-child(8) {
+	width: 90px;
 } /* 담당자 */
-th:nth-child(8), td:nth-child(8), th:nth-child(9), td:nth-child(9) {
-	width: 130px;
-} /* 생성/수정 */
-th:nth-child(10), td:nth-child(10) {
-	width: 120px;
+th:nth-child(9), td:nth-child(9), th:nth-child(10), td:nth-child(10) {
+	width: 110px;
+} /* 생성/수정일 */
+th:nth-child(11), td:nth-child(11) {
+	width: 140px;
 } /* 관리 */
 
 /* 액션 링크 */
+.action-links {
+	white-space: nowrap;
+}
+
 .action-links a {
 	color: #1677ff;
 	text-decoration: none;
 	margin-right: 8px;
-}
-
-.action-links a:last-child {
-	margin-right: 0;
 }
 
 .action-links a:hover {
@@ -177,9 +181,9 @@ th:nth-child(10), td:nth-child(10) {
 </head>
 
 <body>
-    <jsp:include page="../../Header_Side/header.jsp" />
+	<jsp:include page="../../Header_Side/header.jsp" />
 	<div class="main-container">
-        <jsp:include page="../../Header_Side/sidebar.jsp" />
+		<jsp:include page="../../Header_Side/sidebar.jsp" />
 		<div class="content-area">
 			<div class="container">
 
@@ -190,8 +194,8 @@ th:nth-child(10), td:nth-child(10) {
 					<form class="search-form"
 						action="${pageContext.request.contextPath}/productionList"
 						method="get">
-						<input type="text" class="search-input" name="q"
-							placeholder="생산번호 또는 제품코드 검색 (두 글자 이상)" value="${q}">
+						<input class="search-input" name="q"
+							placeholder="생산번호·제품코드·제품명 검색 (두 글자 이상)" value="${q}">
 						<button type="submit" class="btn btn-primary">검색</button>
 					</form>
 					<a href="${pageContext.request.contextPath}/production/form"
@@ -205,6 +209,7 @@ th:nth-child(10), td:nth-child(10) {
 							<tr>
 								<th>생산번호</th>
 								<th>제품코드</th>
+								<th>제품명</th>
 								<th>생산 시작일</th>
 								<th>생산 종료일</th>
 								<th>생산 목표량</th>
@@ -219,7 +224,7 @@ th:nth-child(10), td:nth-child(10) {
 							<c:choose>
 								<c:when test="${empty productionList}">
 									<tr>
-										<td colspan="10" class="no-data">등록된 생산 정보가 없습니다.</td>
+										<td colspan="11" class="no-data">등록된 생산 정보가 없습니다.</td>
 									</tr>
 								</c:when>
 								<c:otherwise>
@@ -227,22 +232,21 @@ th:nth-child(10), td:nth-child(10) {
 										<tr>
 											<td>${p.productionNo}</td>
 											<td>${p.standardCode}</td>
+											<td>${p.stName}</td>
 											<td><fmt:formatDate value="${p.prStart}"
 													pattern="yyyy-MM-dd" /></td>
 											<td><fmt:formatDate value="${p.prEnd}"
 													pattern="yyyy-MM-dd" /></td>
 											<td>${p.prTarget}</td>
 											<td>${p.prCompleted}</td>
-											<!-- 담당자: 현재는 employeeNo를 그대로 표기. 조인으로 이름 필요시 컨트롤러에서 같이 내려주세요 -->
 											<td>${p.employeeNo}</td>
 											<td><fmt:formatDate value="${p.createDate}"
 													pattern="yyyy-MM-dd" /></td>
 											<td><fmt:formatDate value="${p.updateDate}"
 													pattern="yyyy-MM-dd" /></td>
 											<td class="action-links"><a
-												href="${pageContext.request.contextPath}/production/form?no=${p.productionNo}">수정</a>
-												<a
-												href="${pageContext.request.contextPath}/production/delete?no=${p.productionNo}"
+												href="${ctx}/production/form?no=${p.productionNo}">수정</a> <a
+												href="${ctx}/production/delete?no=${p.productionNo}"
 												onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a></td>
 										</tr>
 									</c:forEach>

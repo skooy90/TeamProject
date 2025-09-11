@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>제품 목록 - 기준관리</title>
+<title>기준관리</title>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <link rel="stylesheet" href="${ctx}/Header_Side/style.css">
 <link rel="stylesheet" href="${ctx}/css/style.css">
@@ -111,7 +111,7 @@ tr:nth-child(even) {
 		       
 		<div class="content-area">
 			<div class="container">
-				<h1>제품 목록</h1>
+				<h1>기준 관리</h1>
 				<div class="controls">
 					<form class="search-form"
 						action="${pageContext.request.contextPath}/standardList"
@@ -128,7 +128,6 @@ tr:nth-child(even) {
 							<th>제품 코드</th>
 							<th>제품 이름</th>
 							<th>제품 유형</th>
-							<th>제품 갯수</th>
 							<th>제품 단위</th>
 							<th>수정일</th>
 							<th>관리</th>
@@ -149,14 +148,12 @@ tr:nth-child(even) {
 										<td>${item.standardCode}</td>
 										<td>${item.stName}</td>
 										<td>${item.stType}</td>
-										<td>${item.stQuantity}</td>
 										<td>${item.stUnit}</td>
 										<td>${item.updateDate}</td>
 										<td class="action-links">
 											<%-- Pass the unique code as a parameter for modify/delete actions --%>
-											<a href="modifyStandard?code=${item.standardCode}">수정</a> <a
-											href="deleteStandard?code=${item.standardCode}"
-											onclick="return confirm('정말로 삭제하시겠습니까?');">삭제</a>
+											<a href="modifyStandard?code=${item.standardCode}">수정</a><a
+											href="${pageContext.request.contextPath}/standard/delete?code=${item.standardCode}">삭제</a>
 										</td>
 									</tr>
 								</c:forEach>

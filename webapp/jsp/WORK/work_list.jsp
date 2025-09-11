@@ -236,11 +236,10 @@ th:nth-child(13), td:nth-child(13) {
 							<tr>
 								<th>작업번호</th>
 								<th>생산번호</th>
-								<th>제품코드</th>
+								<th>제품명</th>
 								<th>담당자</th>
 								<th>작업 일정</th>
 								<th>작업량</th>
-								<th>작업 상태</th>
 								<th>작업 완료량</th>
 								<th>작업 시작일</th>
 								<th>작업 종료일</th>
@@ -261,13 +260,12 @@ th:nth-child(13), td:nth-child(13) {
 										<tr>
 											<td>${w.workNo}</td>
 											<td>${w.productionNo}</td>
-											<td>${w.standardCode}</td>
+											<td>${w.stName}</td>
 											<td>${w.employeeNo}</td>
 											<td class="truncate"><fmt:formatDate
 													value="${w.woSchedule}" pattern="yyyy-MM-dd" /></td>
 
 											<td>${w.woQuantity}</td>
-											<td>${w.woStatus}</td>
 											<td>${w.woCompleted}</td>
 											<td><fmt:formatDate value="${w.woStart}"
 													pattern="yyyy-MM-dd" /></td>
@@ -294,9 +292,9 @@ th:nth-child(13), td:nth-child(13) {
 					<div class="chart-card">
 						<canvas id="amountChart"></canvas>
 					</div>
-					<div class="chart-card">
-						<canvas id="statusChart"></canvas>
-					</div>
+<!-- 					<div class="chart-card"> -->
+<%-- 						<canvas id="statusChart"></canvas> --%>
+<!-- 					</div> -->
 					<!-- 					<div class="chart-card" style="grid-column: 1/-1"> -->
 					<%-- 						<canvas id="periodChart"></canvas> --%>
 					<!-- 					</div> -->

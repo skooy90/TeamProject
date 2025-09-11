@@ -10,7 +10,8 @@
 <meta charset="UTF-8">
 <title>작업 ${empty work ? '등록' : '수정'}</title>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-   <link rel="stylesheet" href="${pageContext.request.contextPath}/src/Header_Side/style.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/src/Header_Side/style.css">
 <style>
 .form-card {
 	max-width: 820px;
@@ -77,9 +78,9 @@
 </style>
 </head>
 <body>
-    <jsp:include page="../../Header_Side/header.jsp" />
+	<jsp:include page="../../Header_Side/header.jsp" />
 	<div class="main-container">
-        <jsp:include page="../../Header_Side/sidebar.jsp" />
+		<jsp:include page="../../Header_Side/sidebar.jsp" />
 		<div class="content-area">
 			<div class="form-card">
 
@@ -90,10 +91,7 @@
 					action="${pageContext.request.contextPath}${empty work ? '/work/insert' : '/work/update'}">
 					<div class="form-grid">
 
-						<!-- 작업번호: 신규는 시퀀스 미리보기, 수정은 실제 번호 -->
-						<label>작업번호</label> <input type="text"
-							value="${empty work ? (empty nextNo ? '자동 생성' : nextNo) : work.workNo}"
-							readonly />
+
 
 						<!-- 수정일 때만 실제 전송 -->
 						<c:if test="${not empty work}">
@@ -101,12 +99,19 @@
 						</c:if>
 
 						<!-- 이하 기존 필드들 그대로 -->
-						<label for="productionNo">생산번호</label> <input id="productionNo"
-							name="productionNo" type="text"
-							value="${empty work ? '' : work.productionNo}" required /> <label
-							for="standardCode">제품코드</label> <input id="standardCode"
-							name="standardCode" type="text"
-							value="${empty work ? '' : work.standardCode}" required /> <label
+
+						<label for="productionNo">생산번호</label> <select id="productionNo"
+							name="productionNo" required class="form-control">
+							<option value="" disabled selected>선택하세요</option>
+							<c:forEach var="p" items="${productions}">
+								<option value="${p.productionNo}" data-std="${p.standardCode}"
+									data-name="${p.stName}">${p.productionNo}—${p.stName}
+									(${p.standardCode})</option>
+							</c:forEach>
+						</select> <label for="productName">제품명</label> <input id="productName"
+							class="form-control" type="text" readonly
+							placeholder="생산번호 선택 시 자동표시"> <input type="hidden"
+							id="standardCode" name="standardCode"> <label
 							for="employeeNo">담당자 사번</label> <input id="employeeNo"
 							name="employeeNo" type="text"
 							value="${empty work ? '' : work.employeeNo}" required /> <label
@@ -144,5 +149,15 @@
 			</div>
 		</div>
 	</div>
+	<script>
+  const sel = document.getElementById('productionNo');
+  const nameInput = document.getElementById('productName');
+  const stdHidden  = document.getElementById('standardCode');
+  sel?.addEventListener('change', e => {
+    const opt = e.target.selectedOptions[0];
+    nameInput.value = opt?.dataset.name || '';
+    stdHidden.value = opt?.dataset.std || '';
+  });
+</script>
 </body>
 </html>

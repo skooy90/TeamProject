@@ -9,7 +9,8 @@
 <meta charset="UTF-8">
 <title>생산 ${empty prod ? '등록' : '수정'}</title>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-   <link rel="stylesheet" href="${pageContext.request.contextPath}/src/Header_Side/style.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/src/Header_Side/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
@@ -77,9 +78,9 @@
 
 <body>
 
-    <jsp:include page="../../Header_Side/header.jsp" />
+	<jsp:include page="../../Header_Side/header.jsp" />
 	<div class="main-container">
-        <jsp:include page="../../Header_Side/sidebar.jsp" />
+		<jsp:include page="../../Header_Side/sidebar.jsp" />
 		<div class="content-area">
 			<div class="form-card">
 
@@ -103,11 +104,28 @@
 								value="${prod.productionNo}">
 						</c:if>
 
-						<label for="standardCode">제품코드</label> <input id="standardCode"
-							name="standardCode" type="text"
-							value="${empty prod ? '' : prod.standardCode}" required
-							placeholder="예) FI0014"> <label for="employeeNo">담당자
-							사번</label> <input id="employeeNo" name="employeeNo" type="text"
+						<label for="standardCode">제품코드</label> <select id="standardCode"
+							name="standardCode" required class="form-control">
+							<option value="" disabled selected>선택하세요</option>
+							<optgroup label="SEMI">
+								<c:forEach var="s" items="${standards}">
+									<c:if test="${s.stType == 'SEMI'}">
+										<option value="${s.standardCode}">${s.standardCode} —
+											${s.stName}</option>
+									</c:if>
+								</c:forEach>
+							</optgroup>
+
+							<optgroup label="FINISH">
+								<c:forEach var="s" items="${standards}">
+									<c:if test="${s.stType == 'FINISH'}">
+										<option value="${s.standardCode}">${s.standardCode} —
+											${s.stName}</option>
+									</c:if>
+								</c:forEach>
+							</optgroup>
+						</select> </select> <label for="employeeNo">담당자 사번</label> <input id="employeeNo"
+							name="employeeNo" type="text"
 							value="${empty prod ? '' : prod.employeeNo}" required
 							placeholder="예) K0001"> <label for="prStart">생산
 							시작일</label> <input id="prStart" name="prStart" type="date"

@@ -8,7 +8,8 @@
 <head>
 <meta charset="UTF-8">
 <title>검사 ${empty quality ? '등록' : '수정'}</title>
-   <link rel="stylesheet" href="${pageContext.request.contextPath}/src/Header_Side/style.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/src/Header_Side/style.css">
 <style>
 .form-card {
 	max-width: 780px;
@@ -70,9 +71,9 @@
 </style>
 </head>
 <body>
-    <jsp:include page="../../Header_Side/header.jsp" />
+	<jsp:include page="../../Header_Side/header.jsp" />
 	<div class="main-container">
-        <jsp:include page="../../Header_Side/sidebar.jsp" />
+		<jsp:include page="../../Header_Side/sidebar.jsp" />
 		<div class="content-area">
 			<div class="form-card">
 				<h1>검사 ${empty quality ? '등록' : '수정'}</h1>
@@ -80,6 +81,7 @@
 
 				<form method="post"
 					action="${pageContext.request.contextPath}${empty quality ? '/quality/insert' : '/quality/update'}">
+					<input type="hidden" name="standardCode" id="standardCode">
 					<div class="form-grid">
 						<c:if test="${not empty quality}">
 							<label>검사번호</label>
@@ -87,26 +89,22 @@
 							<input type="hidden" name="qualityNo"
 								value="${quality.qualityNo}">
 						</c:if>
-
-						<label for="workNo">작업번호</label> <input id="workNo" name="workNo"
-							type="text" required
-							value="${empty quality ? '' : quality.workNo}"
-							placeholder="예) W0008"> <label for="standardCode">제품코드</label>
-						<input id="standardCode" name="standardCode" type="text" required
-							value="${empty quality ? '' : quality.standardCode}"
-							placeholder="예) FI0014"> <label for="employeeNo">검사자
+						
+						<label>작업번호</label> <select id="workNo" name="workNo" required>
+							<option value="" disabled selected>작업 선택</option>
+							<c:forEach var="w" items="${workList}">
+								<option value="${w.workNo}" data-stcode="${w.standardCode}"
+									data-stname="${w.stName}" data-completed="${w.woCompleted}">
+									${w.workNo} — ${w.stName} (완료 ${w.woCompleted})</option>
+							</c:forEach>
+						</select> <label>제품명</label> <input type="text" id="productName" readonly
+							placeholder="작업 선택 시 자동 표시"> <label for="employeeNo">검사자
 							사번</label> <input id="employeeNo" name="employeeNo" type="text" required
 							value="${empty quality ? '' : quality.employeeNo}"
-							placeholder="예) K0001"> <label for="quResult">검사
-							결과</label> <select id="quResult" name="quResult">
-							<option
-								${empty quality || quality.quResult=='양품' ? 'selected' : ''}>양품</option>
-							<option ${quality.quResult=='불량' ? 'selected' : ''}>불량</option>
-						</select> <label for="quQuantity">양품 수량</label> <input id="quQuantity"
-							name="quQuantity" type="number" min="0" step="1"
-							value="${empty quality ? 0 : quality.quQuantity}" required>
-
-						<label for="defectQuantity">불량 수량</label> <input
+							placeholder="예) K0001"> <label for="quQuantity">양품
+							수량</label> <input id="quQuantity" name="quQuantity" type="number" min="0"
+							step="1" value="${empty quality ? 0 : quality.quQuantity}"
+							required> <label for="defectQuantity">불량 수량</label> <input
 							id="defectQuantity" name="defectQuantity" type="number" min="0"
 							step="1" value="${empty quality ? 0 : quality.defectQuantity}"
 							required>
@@ -122,9 +120,7 @@
 								pattern="yyyy-MM-dd'T'HH:mm" var="insDT" />
 						</c:if>
 
-						<label for="quManufactureDate">제조일</label> <input type="date"
-							id="quManufactureDate" name="quManufactureDate" value="${mfDate}"
-							required /> <label for="inspectionDate">검사일시</label> <input
+						<label for="inspectionDate">검사일시</label> <input
 							type="datetime-local" id="inspectionDate" name="inspectionDate"
 							step="60" value="${insDT}" />
 
@@ -139,6 +135,42 @@
 			</div>
 		</div>
 	</div>
+	<script>
+  const sel = document.getElementById('workNo');
+  const nameEl = document.getElementById('productName');
+  const codeEl = document.getElementById('standardCode');
+  const goodEl = document.getElementById('goodQty');
+  const badEl  = document.getElementById('badQty');
+
+  let completed = 0;
+
+  sel?.addEventListener('change', e => {
+    const opt = sel.options[sel.selectedIndex];
+    const stname = opt.getAttribute('data-stname') || '';
+    const stcode = opt.getAttribute('data-stcode') || '';
+    completed = parseInt(opt.getAttribute('data-completed') || '0', 10);
+
+    nameEl.value = stname;
+    codeEl.value = stcode;
+
+    // 안내(placeholder) 및 간단한 상한 체크
+    goodEl.placeholder = `0 ~ ${completed}`;
+    badEl.placeholder  = `0 ~ ${completed}`;
+    goodEl.max = completed;
+    badEl.max  = completed;
+  });
+
+  function clamp() {
+    const g = parseInt(goodEl.value || '0', 10);
+    const b = parseInt(badEl.value  || '0', 10);
+    if (g < 0) goodEl.value = 0;
+    if (b < 0) badEl.value  = 0;
+    if (g > completed) goodEl.value = completed;
+    if (b > completed) badEl.value  = completed;
+  }
+  goodEl.addEventListener('input', clamp);
+  badEl.addEventListener('input', clamp);
+</script>
 </body>
 </html>
 l>

@@ -11,7 +11,8 @@
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
-   <link rel="stylesheet" href="${pageContext.request.contextPath}/src/Header_Side/style.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/src/Header_Side/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -214,9 +215,9 @@ tbody tr:hover {
 </style>
 </head>
 <body>
-    <jsp:include page="../../Header_Side/header.jsp" />
+	<jsp:include page="../../Header_Side/header.jsp" />
 	<div class="main-container">
-        <jsp:include page="../../Header_Side/sidebar.jsp" />
+		<jsp:include page="../../Header_Side/sidebar.jsp" />
 		<div class="content-area">
 			<div class="container">
 				<h1>품질 관리</h1>
@@ -227,7 +228,7 @@ tbody tr:hover {
 							placeholder="검사번호 또는 작업번호 검색 (두 글자 이상)">
 						<button type="submit" class="btn btn-primary">검색</button>
 					</form>
-						<a href="${ctx}/quality/form" class="btn btn-success">검사 등록</a>
+					<a href="${ctx}/quality/form" class="btn btn-success">검사 등록</a>
 				</div>
 
 				<div class="table-responsive">
@@ -236,15 +237,11 @@ tbody tr:hover {
 							<tr>
 								<th>검사번호</th>
 								<th>작업번호</th>
-								<th>제품코드</th>
+								<th>제품이름</th>
 								<th>검사자</th>
-								<th>검사 결과</th>
 								<th>양품 수량</th>
 								<th>불량 수량</th>
-								<th>제조일</th>
 								<th>검사일시</th>
-								<th>생성일</th>
-								<th>수정일</th>
 								<th>관리</th>
 							</tr>
 						</thead>
@@ -261,22 +258,16 @@ tbody tr:hover {
 										<tr>
 											<td>${row.qualityNo}</td>
 											<td>${row.workNo}</td>
-											<td>${row.standardCode}</td>
+											<td>${row.stName}</td>
 											<td>${row.employeeNo}</td>
-											<td
-												class="${row.quResult eq '불량' ? 'text-danger' : 'text-success'}">${row.quResult}</td>
 											<td class="num"><fmt:formatNumber
 													value="${row.quQuantity}" /></td>
 											<td class="num"><fmt:formatNumber
 													value="${row.defectQuantity}" /></td>
-											<td><fmt:formatDate value="${row.quManufactureDate}"
-													pattern="yyyy-MM-dd" /></td>
+
 											<td><fmt:formatDate value="${row.inspectionDate}"
-													pattern="yyyy-MM-dd HH:mm" /></td>
-											<td><fmt:formatDate value="${row.createDate}"
-													pattern="yyyy-MM-dd" /></td>
-											<td><fmt:formatDate value="${row.updateDate}"
-													pattern="yyyy-MM-dd" /></td>
+													pattern="yyyy-MM-dd " /></td>
+
 											<td class="action"><a
 												href="${ctx}/quality/form?no=${row.qualityNo}">수정</a> <a
 												class="text-danger"
@@ -289,11 +280,6 @@ tbody tr:hover {
 						</tbody>
 					</table>
 				</div>
-
-				<div class="charts">
-					<div class="chart-box">
-						<canvas id="qualityResultChart"></canvas>
-					</div>
 					<div class="chart-box">
 						<canvas id="defectChart"></canvas>
 					</div>
