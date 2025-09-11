@@ -1,82 +1,176 @@
 @charset "UTF-8";
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f9;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
+        :root {
+            --primary-color: #4A90E2; /* 하늘색 계열의 파란색 */
+            --secondary-color: #2c3e50; /* 다크 네이비 */
+            --background-color: #f4f7f9; /* 밝은 회색 배경 */
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --light-text-color: #ecf0f1;
+            --link-color: #4A90E2;
+            --hover-bg: #34495e; /* 사이드바 호버 배경색 */
+            --active-border-color: #4A90E2;
+            --shadow-light: 0 6px 16px rgba(0, 0, 0, 0.1);
+            --header-height: 80px; /* 헤더 높이 증가*/
+        }
 
-/* ===== Header ===== */
-.main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 60px; /* 헤더 높이 고정 */
-    padding: 10px 20px;
-    background-color: #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-}
+        body {
+            margin: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--background-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-color);
+            letter-spacing: -0.5px;
+        }
 
-.main-header .logo img {
-    height: 40px; /* 로고 이미지 크기 조절 */
-}
+        /* ===== Header ===== */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: var(--header-height);
+            padding: 0 40px;
+            background: linear-gradient(90deg, #2980b9 0%, #f7f9fc 100%);
+            box-shadow: var(--shadow-light);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .main-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* 이미지와 텍스트 사이의 간격 */
+            text-decoration: none;
+        }
 
-.main-header .user-info {
-    margin-right: 15px;
-    font-weight: bold;
-}
+        .main-header .logo img {
+            height: 50px;
+            transition: transform 0.3s ease;
+        }
 
-/* ===== Layout ===== */
-.main-container {
-    display: flex;
-    margin-top: 60px; /* 헤더 높이만큼 아래로 */
-    height: calc(100vh - 60px);
-}
+        /* 로고 텍스트 스타일 추가 */
+        .main-header .logo .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            transition: color 0.3s ease;
+        }
 
-/* ===== Sidebar ===== */
-.sidebar {
-    width: 200px;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    padding-top: 20px;
-    position: fixed;
-    top: 60px; /* 헤더 아래부터 시작 */
-    left: 0;
-    bottom: 0;
-    overflow-y: auto; /* 메뉴가 많아질 경우 스크롤 */
-}
+        .main-header .logo:hover img {
+            transform: scale(1.05);
+        }
 
-.sidebar ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
+        .main-header .logo:hover .logo-text {
+            color: #2980b9;
+        }
 
-.sidebar ul li a {
-    display: block;
-    padding: 15px 20px;
-    color: #ecf0f1;
-    text-decoration: none;
-    transition: background-color 0.3s;
-}
+        .main-header .user-info {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 500;
+            gap: 20px;
+        }
 
-.sidebar ul li a:hover {
-    background-color: #34495e;
-}
+        .main-header .user-info span {
+            color: var(--text-color);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px; /* 아이콘과 텍스트 사이 간격 */
+        }
 
-/* ===== Content Area ===== */
-.content-area {
-    flex-grow: 1;
-    padding: 20px;
-    margin-left: 200px; /* 사이드바 너비만큼 오른쪽으로 밀기 */
-    overflow-y: auto;
-    height: calc(100vh - 60px); /* 헤더 제외한 높이 */
-}
+        .main-header .user-info a {
+            padding: 3px 4px;
+            border-radius: 25px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px; /* 아이콘과 텍스트 사이 간격 */
+        }
+
+        .main-header .user-info a:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ===== Layout ===== */
+        .main-container {
+            display: flex;
+            margin-top: 80px;
+            height: calc(100vh - 80px);
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(90deg, #7eb1d3 0%, #e2f0fa 100%);
+            color: var(--light-text-color);
+            padding-top: 30px;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: width 0.3s ease;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            padding: 18px 25px;
+            color: #333333;
+            text-decoration: none;
+            transition: background-color 0.3s ease, padding-left 0.3s ease, color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 18px;
+            font-size: 22px;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background: linear-gradient(90deg, #034570 0%, #ffffff 100%);
+
+            padding-left: 30px;
+            color: #ffffff;
+        }
+
+        .sidebar ul li a:hover i {
+            color:#ffffff;
+        }
+
+        /* 활성 링크 스타일 */
+        .sidebar ul li a.active {
+            background: linear-gradient(90deg, #034570 0%, #ffffff 100%);
+            color: #ffffff;
+            border-left: 6px solid var(--active-border-color);
+            padding-left: 25px;
+        }
+
+        .sidebar ul li a.active i {
+            color: var(--primary-color);
+        }
