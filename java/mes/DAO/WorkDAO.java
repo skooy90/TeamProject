@@ -54,30 +54,60 @@ public class WorkDAO {
 	    return null;
 	}
 
-	// 등록
+	//	isert 
 	// WorkDAO.java
-	public boolean insert(WorkDTO d) {
-		String sql = "INSERT INTO WORK (" + "  WORK_NO, PRODUCTION_NO, STANDARD_CODE, EMPLOYEE_NO,"
-				+ "  WO_SCHEDULE, WO_QUANTITY, WO_STATUS, WO_COMPLETED, WO_START, WO_END,"
-				+ "  CREATE_DATE, UPDATE_DATE" + ") VALUES (" + "  'W' || LPAD(SEQ_WORK_NO.NEXTVAL, 4, '0'), ?, ?, ?,"
-				+ "  ?, ?, ?, ?, ?, ?," + "  SYSDATE, SYSDATE)";
-		try (Connection c = DBManager.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-			int i = 1;
-			ps.setString(i++, d.getProductionNo());
-			ps.setString(i++, d.getStandardCode());
-			ps.setString(i++, d.getEmployeeNo());
-			ps.setDate(i++, d.getWoSchedule());
-			ps.setInt(i++, d.getWoQuantity());
-			ps.setString(i++, d.getWoStatus());
-			ps.setInt(i++, d.getWoCompleted());
-			ps.setTimestamp(i++, d.getWoStart());
-			ps.setTimestamp(i++, d.getWoEnd());
-			return ps.executeUpdate() > 0; // ← boolean
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public int insert(WorkDTO d) {
+	    String sql =
+	        "INSERT INTO WORK (WORK_NO, PRODUCTION_NO, STANDARD_CODE, EMPLOYEE_NO, " +
+	        " WO_SCHEDULE, WO_QUANTITY, WO_STATUS, WO_COMPLETED, " +
+	        " WO_START, WO_END, CREATE_DATE, UPDATE_DATE) " +
+	        "VALUES ('W' || LPAD(SEQ_WORK_NO.NEXTVAL, 4, '0'), ?, ?, ?, " +
+	        "        ?, ?, ?, ?, ?, ?, SYSDATE, SYSDATE)";
+
+	    try (Connection c = DBManager.getConnection();
+	         PreparedStatement ps = c.prepareStatement(sql)) {
+
+	        int i = 1;
+	        ps.setString(i++, d.getProductionNo());
+	        ps.setString(i++, d.getStandardCode());
+	        ps.setString(i++, d.getEmployeeNo());
+	        ps.setDate(i++, d.getWoSchedule());
+	        ps.setInt(i++, d.getWoQuantity());     // ★ 생산목표량으로 고정된 값
+	        ps.setString(i++, d.getWoStatus());
+	        ps.setInt(i++, d.getWoCompleted());
+	        ps.setTimestamp(i++, d.getWoStart());
+	        ps.setTimestamp(i++, d.getWoEnd());
+
+	        return ps.executeUpdate();             // ← int 반환
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return 0;
+	    }
 	}
+
+    /* ------- 이하 보조 메서드들: NULL 안전 바인딩 ------- */
+    private void setNullableString(PreparedStatement ps, int idx, String v) throws SQLException {
+        if (v == null || v.isBlank()) ps.setNull(idx, Types.VARCHAR);
+        else ps.setString(idx, v);
+    }
+    private void setNullableInt(PreparedStatement ps, int idx, Integer v) throws SQLException {
+        if (v == null) ps.setNull(idx, Types.INTEGER);
+        else ps.setInt(idx, v);
+    }
+    private void setNullableDate(PreparedStatement ps, int idx, Date v) throws SQLException {
+        if (v == null) ps.setNull(idx, Types.DATE);
+        else ps.setDate(idx, v);
+    }
+    private void setNullableTs(PreparedStatement ps, int idx, Timestamp v) throws SQLException {
+        if (v == null) ps.setNull(idx, Types.TIMESTAMP);
+        else ps.setTimestamp(idx, v);
+    }
+
+    /** (선택) 과거 boolean 반환을 쓰던 코드 호환용 */
+    @Deprecated
+    public boolean insertAsBoolean(WorkDTO d) {
+        return insert(d) > 0;
+    }
 
 	// 수정
 	public int update(WorkDTO w) {
