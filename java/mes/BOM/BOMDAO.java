@@ -499,50 +499,6 @@ public class BOMDAO {
         return standardList;
     }
     
-    // BOM 유형별 조회
-    public List<BOMDTO> selectBOMsByType(String bomType) {
-        List<BOMDTO> bomList = new ArrayList<>();
-        String sql = "SELECT b.BOM_NO, b.STANDARD_CODE, s.ST_NAME, s.ST_TYPE, s.ST_UNIT, " +
-                    "b.BOM_DESCRIPTION, b.BOM_TYPE, b.BOM_ORDER, b.BOM_IMAGE, " +
-                    "b.CREATE_DATE, b.UPDATE_DATE " +
-                    "FROM BOM b " +
-                    "JOIN STANDARD s ON b.STANDARD_CODE = s.STANDARD_CODE " +
-                    "WHERE b.BOM_TYPE = ? " +
-                    "ORDER BY b.BOM_ORDER, b.CREATE_DATE DESC";
-        
-        try {
-            conn = getConnection();
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, bomType);
-            rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                BOMDTO bom = new BOMDTO();
-                bom.setBomNo(rs.getString("BOM_NO"));
-                bom.setStandardCode(rs.getString("STANDARD_CODE"));
-                bom.setBomDescription(rs.getString("BOM_DESCRIPTION"));
-                bom.setBomType(rs.getString("BOM_TYPE"));
-                bom.setBomOrder(rs.getInt("BOM_ORDER"));
-                bom.setBomImage(rs.getString("BOM_IMAGE"));
-                bom.setCreateDate(rs.getDate("CREATE_DATE"));
-                bom.setUpdateDate(rs.getDate("UPDATE_DATE"));
-                
-                // JOIN된 데이터 저장
-                bom.setStName(rs.getString("ST_NAME"));
-                bom.setStType(rs.getString("ST_TYPE"));
-                bom.setStUnit(rs.getString("ST_UNIT"));
-                
-                bomList.add(bom);
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeResources(conn, pstmt, rs);
-        }
-        
-        return bomList;
-    }
     
     // 라우팅별 BOM 목록 조회 (공정 관리와 연동)
     public List<BOMDTO> selectRoutingBOMs() {
@@ -684,6 +640,7 @@ public class BOMDAO {
         
         return count;
     }
+    
     
     // 특정 STANDARD_CODE의 모든 공정 삭제
     public int deleteProcessesByStandardCode(String standardCode) {
@@ -836,4 +793,5 @@ public class BOMDAO {
         
         return bomList;
     }
+    
 }
