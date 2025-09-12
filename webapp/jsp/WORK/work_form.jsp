@@ -120,23 +120,10 @@
 							value="<fmt:formatDate value='${work.woSchedule}' pattern='yyyy-MM-dd'/>" />
 
 						<label for="woQuantity">작업량</label> <input id="woQuantity"
-							name="woQuantity" type="number" min="0" step="1"
-							value="${empty work ? 0 : work.woQuantity}" required /> <label
-							for="woStatus">작업 상태</label> <select id="woStatus"
-							name="woStatus">
-							<option ${empty work || work.woStatus=='대기' ? 'selected' : ''}>대기</option>
-							<option ${work.woStatus=='진행중' ? 'selected' : ''}>진행중</option>
-							<option ${work.woStatus=='완료' ? 'selected' : ''}>완료</option>
-						</select> <label for="woCompleted">작업 완료량</label> <input id="woCompleted"
-							name="woCompleted" type="number" min="0" step="1"
-							value="${empty work ? 0 : work.woCompleted}" /> <label
-							for="woStart">작업 시작일</label> <input id="woStart" name="woStart"
-							type="datetime-local"
-							value="${not empty work.woStart ? fn:replace(fn:substring(work.woStart,0,16),' ','T') : ''}" />
-
-						<label for="woEnd">작업 종료일</label> <input id="woEnd" name="woEnd"
-							type="datetime-local"
-							value="${not empty work.woEnd ? fn:replace(fn:substring(work.woEnd,0,16),' ','T') : ''}" />
+							name="woQuantity" value="${targetFromServer}" readonly> <input
+							type="hidden" id="standardCode" name="standardCode"> <label
+							for="woCompleted">작업 완료량</label> <input id="woCompleted"
+							name="woCompleted">
 					</div>
 
 					<div class="actions">
@@ -150,14 +137,17 @@
 		</div>
 	</div>
 	<script>
-  const sel = document.getElementById('productionNo');
-  const nameInput = document.getElementById('productName');
-  const stdHidden  = document.getElementById('standardCode');
-  sel?.addEventListener('change', e => {
-    const opt = e.target.selectedOptions[0];
-    nameInput.value = opt?.dataset.name || '';
-    stdHidden.value = opt?.dataset.std || '';
-  });
+	  const sel  = document.getElementById('productionNo');
+	  const $qty = document.getElementById('woQuantity');
+	  const $std = document.getElementById('standardCode');
+
+	  function applyFromProduction() {
+	    const opt = sel.options[sel.selectedIndex];
+	    $qty.value = opt?.dataset.target ?? 0;   // 작업량 ← 생산목표량
+	    $std.value = opt?.dataset.standard ?? '';
+	  }
+	  sel.addEventListener('change', applyFromProduction);
+	  applyFromProduction();
 </script>
 </body>
 </html>

@@ -241,10 +241,6 @@ th:nth-child(13), td:nth-child(13) {
 								<th>작업 일정</th>
 								<th>작업량</th>
 								<th>작업 완료량</th>
-								<th>작업 시작일</th>
-								<th>작업 종료일</th>
-								<th>생성일</th>
-								<th>수정일</th>
 								<th>관리</th>
 							</tr>
 						</thead>
@@ -260,21 +256,27 @@ th:nth-child(13), td:nth-child(13) {
 										<tr>
 											<td>${w.workNo}</td>
 											<td>${w.productionNo}</td>
-											<td>${w.stName}</td>
+											<td>
+											<c:choose>
+											<c:when test="${not empty w.standardCode}">
+											  <a class="prod-link"
+											     href="${pageContext.request.contextPath}/bom/detail?code=${w.standardCode}"
+											     title="BOM 상세 보기">${w.stName}</a>
+											</c:when>
+											<c:otherwise>
+											  ${w.stName}
+											</c:otherwise>
+											</c:choose>
+											</td>
+																						
 											<td>${w.employeeNo}</td>
 											<td class="truncate"><fmt:formatDate
 													value="${w.woSchedule}" pattern="yyyy-MM-dd" /></td>
 
 											<td>${w.woQuantity}</td>
 											<td>${w.woCompleted}</td>
-											<td><fmt:formatDate value="${w.woStart}"
-													pattern="yyyy-MM-dd" /></td>
-											<td><fmt:formatDate value="${w.woEnd}"
-													pattern="yyyy-MM-dd" /></td>
-											<td><fmt:formatDate value="${w.createDate}"
-													pattern="yyyy-MM-dd" /></td>
-											<td><fmt:formatDate value="${w.updateDate}"
-													pattern="yyyy-MM-dd" /></td>
+											
+										
 											<td class="cell-actions"><a
 												href="${ctx}/work/form?no=${w.workNo}">수정</a> <a
 												class="delete" href="${ctx}/work/delete?no=${w.workNo}"
