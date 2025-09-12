@@ -349,3 +349,181 @@ tr:hover {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* 공정별 자재 사용량 테이블 스타일 */
+.materials-usage-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.materials-usage-table th {
+    background-color: #e9ecef;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.materials-usage-table td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: top;
+}
+
+.materials-usage-table tr.step-semi {
+    background-color: #f8f9fa;
+}
+
+.materials-usage-table tr.step-finish {
+    background-color: #fff3cd;
+}
+
+.materials-usage-table td:nth-child(3) {
+    font-weight: 500;
+    color: #495057;
+}
+
+.materials-usage-table td:nth-child(4) {
+    font-weight: 600;
+    color: #007bff;
+}
+
+/* 공정 단계 테이블 스타일 */
+.steps-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.steps-table th {
+    background-color: #e9ecef;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.steps-table td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.steps-table tr.step-semi {
+    background-color: #f8f9fa;
+}
+
+.steps-table tr.step-finish {
+    background-color: #fff3cd;
+}
+
+.process-type-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 500;
+}
+
+/* 공정 그룹 스타일 */
+.process-group {
+    margin-bottom: 30px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.process-semi {
+    border-left: 4px solid #28a745;
+}
+
+.process-finish {
+    border-left: 4px solid #ffc107;
+}
+
+.process-header {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.process-header h3 {
+    margin: 0;
+    color: #495057;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.materials-list {
+    padding: 20px;
+}
+
+.material-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f3f4;
+    width: 150px;
+    
+}
+
+.material-item:last-child {
+    border-bottom: none;
+}
+
+.material-name {
+    font-weight: 500;
+    color: #495057;
+    font-size: 1em;
+}
+
+.material-quantity {
+    font-weight: 600;
+    color: #007bff;
+    background-color: #e3f2fd;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+}
+
+/* 반응형 - 자재 사용량 테이블 */
+@media (max-width: 768px) {
+    .materials-usage-table {
+        font-size: 0.9em;
+    }
+    
+    .materials-usage-table th,
+    .materials-usage-table td {
+        padding: 8px;
+    }
+    
+    .process-group {
+        margin-bottom: 20px;
+    }
+    
+    .process-header {
+        padding: 12px 15px;
+    }
+    
+    .process-header h3 {
+        font-size: 1.1em;
+    }
+    
+    .materials-list {
+        padding: 15px;
+    }
+    
+    .material-item {
+        padding: 10px 0;
+    }
+    
+    .material-quantity {
+        padding: 3px 10px;
+        font-size: 0.8em;
+    }
+}

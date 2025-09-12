@@ -273,6 +273,167 @@
     background: #545b62;
 }
 
+/* 라우팅 타입 스타일 */
+.routing-type {
+    background: #007bff;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 500;
+}
+
+/* 차트 카드 */
+.chart-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-card h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* 공정 단계 섹션 */
+.process-steps {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.process-steps h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+/* 공정 단계 카드 */
+.step-card {
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.step-semi {
+    border-left: 4px solid #ffc107;
+}
+
+.step-finish {
+    border-left: 4px solid #28a745;
+}
+
+.step-header {
+    background: #f8f9fa;
+    padding: 15px 20px 15px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.step-number {
+    background: #007bff;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.step-semi .step-number {
+    background: #ffc107;
+}
+
+.step-finish .step-number {
+    background: #28a745;
+}
+
+.step-info h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 1.2em;
+}
+
+.step-type {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.step-content {
+    padding: 20px;
+}
+
+/* 자재 섹션 */
+.materials-section {
+    margin-bottom: 20px;
+}
+
+.materials-section h5 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1em;
+    font-weight: 600;
+}
+
+.materials-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.material-item {
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 6px;
+    border-left: 3px solid #007bff;
+    font-size: 0.9em;
+    color: #495057;
+}
+
+/* 작업 지침 */
+.work-instruction h5 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1em;
+    font-weight: 600;
+}
+
+.instruction-text {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 3px solid #28a745;
+}
+
+.instruction-text p {
+    margin: 0 0 10px 0;
+    color: #495057;
+    line-height: 1.5;
+}
+
+.instruction-text p:last-child {
+    margin-bottom: 0;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .detail-header {
@@ -291,5 +452,19 @@
     
     .stats-section {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .materials-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .step-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .step-content {
+        padding: 15px;
     }
 }

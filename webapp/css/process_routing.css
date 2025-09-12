@@ -1,0 +1,361 @@
+/* 공정 라우팅 스타일 */
+
+/* 라우팅 배지 */
+.routing-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.routing-semi {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.routing-finish {
+    background-color: #28a745;
+    color: #fff;
+}
+
+/* 단계 배지 */
+.step-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.step-semi {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.step-finish {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* 상세 페이지 스타일 */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    color: white;
+}
+
+.header-info h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.routing-type {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* 그리드 레이아웃 */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+/* 정보 카드 */
+.info-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #007bff;
+}
+
+.info-card h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #666;
+    min-width: 120px;
+}
+
+.info-value {
+    color: #333;
+    font-weight: 500;
+}
+
+/* 차트 카드 */
+.chart-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #28a745;
+}
+
+.chart-card h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* 공정 단계 */
+.process-steps {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #ffc107;
+}
+
+.process-steps h3 {
+    margin: 0 0 25px 0;
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.step-card {
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-2px);
+}
+
+.step-semi {
+    border-left: 5px solid #ffc107;
+}
+
+.step-finish {
+    border-left: 5px solid #28a745;
+}
+
+.step-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-right: 15px;
+}
+
+.step-info h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.step-type {
+    display: inline-block;
+    padding: 4px 12px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.step-content {
+    padding: 20px;
+    background: white;
+}
+
+.materials-section, .work-instruction {
+    margin-bottom: 20px;
+}
+
+.materials-section:last-child, .work-instruction:last-child {
+    margin-bottom: 0;
+}
+
+.materials-section h5, .work-instruction h5 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.materials-section h5::before {
+    content: "📦";
+    margin-right: 8px;
+}
+
+.work-instruction h5::before {
+    content: "📋";
+    margin-right: 8px;
+}
+
+.materials-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.material-item {
+    padding: 6px 12px;
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #bbdefb;
+}
+
+.instruction-text {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+}
+
+.instruction-text p {
+    margin: 0 0 8px 0;
+    color: #555;
+    line-height: 1.6;
+}
+
+.instruction-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    .step-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .step-number {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+
+/* 링크 스타일 */
+.detail-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.detail-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* 액션 링크 */
+.action-links {
+    display: flex;
+    gap: 10px;
+}
+
+.action-links a {
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.action-links .edit {
+    background-color: #28a745;
+    color: white;
+}
+
+.action-links .edit:hover {
+    background-color: #218838;
+}
+
+.action-links .delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.action-links .delete:hover {
+    background-color: #c82333;
+}
