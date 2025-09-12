@@ -16,6 +16,7 @@
                 <li><a href="${ctx}/bom"><i class="fas fa-clipboard-list"></i> BOM</a></li>
                 <li><a href="${ctx}/material"><i class="fas fa-box"></i> 자재 관리</a></li>
                 <li><a href="${ctx}/boardList"><i class="fas fa-chalkboard"></i> 게시판</a></li>
+                <li><a href="${ctx}/mypage"><i class="fas fa-user-circle"></i> 마이페이지</a></li>
                 <li class="admin-section">
       				<div class="admin-title">관리자</div>
       				<ul class="admin-menu">
