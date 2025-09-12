@@ -56,24 +56,24 @@ public class ProductionDAO {
 	/** 작업 등록 폼 드롭다운용: 생산번호 + 제품코드 + 제품명 */
 
 	public List<Map<String, String>> findForWorkForm() {
-		String sql = "SELECT p.PRODUCTION_NO, p.STANDARD_CODE, s.ST_NAME "
-				+ "  FROM PRODUCTION p JOIN STANDARD s ON s.STANDARD_CODE = p.STANDARD_CODE "
-				+ " ORDER BY p.PRODUCTION_NO DESC";
-		List<Map<String, String>> list = new ArrayList<>();
-		try (Connection c = DBManager.getConnection();
-				PreparedStatement ps = c.prepareStatement(sql);
-				ResultSet rs = ps.executeQuery()) {
-			while (rs.next()) {
-				Map<String, String> row = new HashMap<>();
-				row.put("productionNo", rs.getString(1));
-				row.put("standardCode", rs.getString(2));
-				row.put("stName", rs.getString(3));
-				list.add(row);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
+	    String sql = "SELECT p.PRODUCTION_NO, p.STANDARD_CODE, s.ST_NAME, p.PR_TARGET " +
+	                 "FROM PRODUCTION p " +
+	                 "JOIN STANDARD s ON s.STANDARD_CODE = p.STANDARD_CODE " +
+	                 "ORDER BY p.PRODUCTION_NO DESC";
+	    List<Map<String, String>> list = new ArrayList<>();
+	    try (Connection c = DBManager.getConnection();
+	         PreparedStatement ps = c.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+	        while (rs.next()) {
+	            Map<String, String> row = new HashMap<>();
+	            row.put("productionNo", rs.getString(1));
+	            row.put("standardCode", rs.getString(2));
+	            row.put("stName",       rs.getString(3));
+	            row.put("target",       String.valueOf(rs.getInt(4))); // ★ PR_TARGET
+	            list.add(row);
+	        }
+	    } catch (Exception e) { e.printStackTrace(); }
+	    return list;
 	}
 
 	// 접두 검색(생산번호/제품코드 2글자 이상)
@@ -297,4 +297,57 @@ public class ProductionDAO {
 		  }catch(Exception e){e.printStackTrace();}
 		  return 0;
 		}
+		 public Integer getTargetByNo(String productionNo) {
+		        String sql = "SELECT PR_TARGET FROM PRODUCTION WHERE PRODUCTION_NO = ?";
+		        try (Connection c = DBManager.getConnection();
+		             PreparedStatement ps = c.prepareStatement(sql)) {
+		            ps.setString(1, productionNo);
+		            try (ResultSet rs = ps.executeQuery()) {
+		                if (rs.next()) return rs.getInt(1);
+		            }
+		        } catch (Exception e) { e.printStackTrace(); }
+		        return null;
+		    }
+
+		    public int updateCompleted(String productionNo, int completed) {
+		        String sql = "UPDATE PRODUCTION SET PR_COMPLETED=?, UPDATE_DATE=SYSDATE WHERE PRODUCTION_NO=?";
+		        try (Connection c = DBManager.getConnection();
+		             PreparedStatement ps = c.prepareStatement(sql)) {
+		            ps.setInt(1, completed);
+		            ps.setString(2, productionNo);
+		            return ps.executeUpdate();
+		        } catch (Exception e) { e.printStackTrace(); }
+		        return 0;
+		    }
+
+		    // (선택) 목표량 바뀔 때 연결된 작업량도 같이 맞추고 싶으면:
+		    public int syncWorkQuantityToTarget(String productionNo) {
+		        String sql = "UPDATE WORK SET WO_QUANTITY = " +
+		                     "(SELECT PR_TARGET FROM PRODUCTION WHERE PRODUCTION_NO = ?) " +
+		                     "WHERE PRODUCTION_NO = ?";
+		        try (Connection c = DBManager.getConnection();
+		             PreparedStatement ps = c.prepareStatement(sql)) {
+		            ps.setString(1, productionNo);
+		            ps.setString(2, productionNo);
+		            return ps.executeUpdate();
+		        } catch (Exception e) { e.printStackTrace(); }
+		        return 0;
+		    }
+
+		    
+		    public String getStandardCodeByNo(String productionNo) {
+		        String sql = "SELECT STANDARD_CODE FROM PRODUCTION WHERE PRODUCTION_NO = ?";
+		        try (Connection c = DBManager.getConnection();
+		             PreparedStatement ps = c.prepareStatement(sql)) {
+		            ps.setString(1, productionNo);
+		            try (ResultSet rs = ps.executeQuery()) {
+		                if (rs.next()) return rs.getString(1);
+		            }
+		        } catch (Exception e) { e.printStackTrace(); }
+		        return null;
+		    }
+		    
+			
+			
 }
+
