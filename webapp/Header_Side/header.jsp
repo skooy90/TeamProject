@@ -12,7 +12,7 @@
         </a>
         <c:if test="${not empty sessionScope.loginUser}">
             <div class="user-info">
-                <span><i class="fas fa-user-circle"></i> 안녕하세요, 김상명(관리자)님</span>
+                <span><i class="fas fa-user-circle"></i> 안녕하세요, ${sessionScope.empName}님</span>
                 <a href="${pageContext.request.contextPath}/mypage">
                     <i class="fas fa-user-cog"></i> 마이페이지
                 </a>

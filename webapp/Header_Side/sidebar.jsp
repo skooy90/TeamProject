@@ -3,7 +3,7 @@
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <link rel="stylesheet" href="${ctx}/Header_Side/style.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
  <div class="main-container">
         <nav class="sidebar">
             <ul>
@@ -15,8 +15,14 @@
                 <li><a href="${ctx}/process"><i class="fas fa-project-diagram"></i> 공정 관리</a></li>
                 <li><a href="${ctx}/bom"><i class="fas fa-clipboard-list"></i> BOM</a></li>
                 <li><a href="${ctx}/material"><i class="fas fa-box"></i> 자재 관리</a></li>
-                <li><a href="${ctx}/userList"><i class="fas fa-users"></i> 사용자 관리</a></li>
                 <li><a href="${ctx}/boardList"><i class="fas fa-chalkboard"></i> 게시판</a></li>
-            </ul>
-        </nav>
-      </div>
+                <li class="admin-section">
+      				<div class="admin-title">관리자</div>
+      				<ul class="admin-menu">
+                        <li><a href="${ctx}/admin/users"><i class="fas fa-users"></i> 사용자 관리</a></li>
+                        <li><a href="${ctx}/admin/boards"><i class="fas fa-file-alt"></i> 게시판 관리</a></li>
+      				</ul>
+    					</li>
+           	</ul>
+   		</nav>
+</div>
