@@ -8,7 +8,7 @@
     <c:set var="ctx" value="${pageContext.request.contextPath}" />
     
   <link rel="stylesheet" href="${ctx}/css/material_form.css">
-  <link rel="stylesheet" href="${ctx}/src/Header_Side/style.css">
+  <link rel="stylesheet" href="${ctx}/Header_Side/style.css">
 </head>
 <body>
     <jsp:include page="../../Header_Side/header.jsp" />

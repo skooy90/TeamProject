@@ -8,8 +8,8 @@
 <title>재고 목록 - 자재관리</title>
     <c:set var="ctx" value="${pageContext.request.contextPath}" />
     
+  <link rel="stylesheet" href="${ctx}/Header_Side/style.css">
   <link rel="stylesheet" href="${ctx}/css/material_list.css">
-  <link rel="stylesheet" href="${ctx}/src/Header_Side/style.css">
 </head>
 <body>
     <jsp:include page="../../Header_Side/header.jsp" />
@@ -96,19 +96,7 @@
                                 </c:choose>
                             </span>
                         </div>
-                        <c:if test="${not empty filterType && filterType != 'all'}">
-                            <div class="filter-info">
-                                <span class="filter-label">필터:</span>
-                                <span class="filter-value">
-                                    <c:choose>
-                                        <c:when test="${filterType == 'RAW'}">원자재</c:when>
-                                        <c:when test="${filterType == 'SEMI'}">반제품</c:when>
-                                        <c:when test="${filterType == 'FINISH'}">완제품</c:when>
-                                        <c:otherwise>${filterType}</c:otherwise>
-                                    </c:choose>
-                                </span>
-                            </div>
-                        </c:if>
+                   
                     </div>
                     
                     <div class="control-right">
@@ -139,8 +127,7 @@
                                 <c:otherwise>${filterType}</c:otherwise>
                             </c:choose>
                         </span>
-                        - <strong id="filteredCount">${activeTab == 'lot' ? (lotList != null ? lotList.size() : 0) : (totalList != null ? totalList.size() : 0)}개</strong> 
-                        ${activeTab == 'lot' ? 'LOT' : '제품'} 표시
+                        
                     </div>
                 </c:if>
                 
@@ -165,8 +152,8 @@
                                     <th>재고코드</th>
                                     <th>제품명</th>
                                     <th>제품유형</th>
-                                    <th>단위</th>
                                     <th>수량</th>
+                                    <th>단위</th>
                                     <th>담당자</th>
                                     <th>사번</th>
                                     <th>등록일</th>
@@ -179,14 +166,10 @@
                                         <c:forEach var="material" items="${lotList}">
                                             <tr data-type="${material.stType}">
                                                 <td class="code-cell">
-                                                    <a href="${pageContext.request.contextPath}/material/detail?code=${material.materialCode}" class="detail-link">
                                                         ${material.materialCode}
-                                                    </a>
                                                 </td>
                                                 <td class="name-cell">
-                                                    <a href="${pageContext.request.contextPath}/material/detail?code=${material.materialCode}" class="detail-link">
                                                         ${material.stName}
-                                                    </a>
                                                 </td>
                                                 <td class="type-cell">
                                                     <span class="type-badge type-${material.stType}">
@@ -198,7 +181,6 @@
                                                         </c:choose>
                                                     </span>
                                                 </td>
-                                                <td class="unit-cell">${material.stUnit}</td>
                                                 <td class="quantity-cell">
                                                     <div class="quantity-info">
                                                         <span class="status-badge ${material.maQuantity <= 50 ? 'badge-low' : 'badge-normal'}">
@@ -207,6 +189,7 @@
                                                         <span class="quantity-value">${material.maQuantity}</span>
                                                     </div>
                                                 </td>
+                                                <td class="unit-cell">${material.stUnit}</td>
                                                 <td class="employee-cell">${material.usName}</td>
                                                 <td class="empno-cell">${material.employeeNo}</td>
                                                 <td class="date-cell">
@@ -249,8 +232,8 @@
                                     <th>제품코드</th>
                                     <th>제품명</th>
                                     <th>제품유형</th>
-                                    <th>단위</th>
                                     <th>총수량</th>
+                                    <th>단위</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -270,7 +253,6 @@
                                                         </c:choose>
                                                     </span>
                                                 </td>
-                                                <td class="unit-cell">${material.stUnit}</td>
                                                 <td class="quantity-cell">
                                                     <div class="quantity-info">
                                                         <span class="status-badge ${material.maQuantity <= 50 ? 'badge-low' : 'badge-normal'}">
@@ -279,6 +261,7 @@
                                                         <span class="quantity-value">${material.maQuantity}</span>
                                                     </div>
                                                 </td>
+                                                <td class="unit-cell">${material.stUnit}</td>
                                             </tr>
                                         </c:forEach>
                                     </c:when>

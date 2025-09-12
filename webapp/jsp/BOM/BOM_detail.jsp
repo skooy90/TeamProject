@@ -10,14 +10,14 @@
     <title>BOM 상세 - MES 시스템</title>
         <c:set var="ctx" value="${pageContext.request.contextPath}" />
     
-  <link rel="stylesheet" href="${ctx}/css/bom_list.css">
-  <link rel="stylesheet" href="${ctx}/src/Header_Side/style.css">
+  <link rel="stylesheet" href="${ctx}/Header_Side/style.css">
+  <link rel="stylesheet" href="${ctx}/css/bom_detail.css">
 </head>
 <body>
     <jsp:include page="../../Header_Side/header.jsp" />
     
     <div class="main-container">
-        <jsp:include page="../../Header_Side/header.jsp" />
+        <jsp:include page="../../Header_Side/sidebar.jsp" />
         
         <div class="content-area">
             <div class="container">
@@ -72,27 +72,6 @@
                         </div>
                     </div>
 
-                    <div class="card">
-                        <h3 class="card-title">재고 현황 요약</h3>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <h4>전체 자재</h4>
-                                <p class="number">${materials.size()}</p>
-                            </div>
-                            <div class="stat-card">
-                                <h4>충분한 재고</h4>
-                                <p class="number" id="sufficientCount">0</p>
-                            </div>
-                            <div class="stat-card">
-                                <h4>부족한 재고</h4>
-                                <p class="number" id="insufficientCount">0</p>
-                            </div>
-                            <div class="stat-card">
-                                <h4>재고 충족률</h4>
-                                <p class="number" id="fulfillmentRate">0%</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- 공정별 자재 사용량 -->

@@ -10,8 +10,8 @@
     <title>공정 상세 - ${process.stName} - MES 시스템</title>
       <c:set var="ctx" value="${pageContext.request.contextPath}" />
     
+  <link rel="stylesheet" href="${ctx}/Header_Side/style.css">
   <link rel="stylesheet" href="${ctx}/css/process_detail.css">
-  <link rel="stylesheet" href="${ctx}/src/Header_Side/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -25,7 +25,7 @@
                 <!-- 헤더 섹션 -->
                 <div class="detail-header">
                     <div class="header-info">
-                        <h1>${process.prDescription}</h1>
+                        <h1>${process.stName}</h1>
                         <span class="routing-type">${process.stType == 'SEMI' ? '반제품 라우팅' : '완제품 라우팅'}</span>
                     </div>
                     <div class="header-actions">

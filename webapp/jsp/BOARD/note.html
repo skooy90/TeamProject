@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            color: #333;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 24px;
+            color: #4a5a70;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            text-decoration: none;
+            color: #fff;
+            background-color: #778899;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #5f6b7a;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #4a5a70;
+            padding: 20px 0;
+            color: #fff;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li a {
+            display: block;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar li a:hover,
+        .sidebar li a.active {
+            background-color: #5f6b7a;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #f4f7f9;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .breadcrumb {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .search-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .search-section input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #5bc0de;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .write-btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .write-btn:hover {
+            background-color: #218838;
+        }
+
+        .search-btn:hover {
+            background-color: #46b8da;
+        }
+
+        .board-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .board-table th,
+        .board-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .board-table thead th {
+            background-color: #f8f8f8;
+            font-weight: 600;
+        }
+
+        .board-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .board-table .title a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .board-table .title a:hover {
+            text-decoration: underline;
+        }
+
+        .board-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .pagination a,
+        .pagination span {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #555;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #eee;
+        }
+
+        .pagination .current-page {
+            background-color: #4a5a70;
+            color: #fff;
+            border-color: #4a5a70;
+            font-weight: bold;
+        }
+
+        .tab-menu {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-menu a {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 600;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .tab-menu a.active {
+            color: #4a5a70;
+        }
+
+        .tab-menu a.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 100%;
+            height: 2px;
+            background-color: #4a5a70;
+        }
+
+        .board-content {
+            display: none;
+        }
+
+        .board-content.active {
+            display: block;
+        }
+
+        /* 새롭게 추가된 CSS */
+        .write-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .write-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            min-height: 200px;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .submit-btn {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+
+        .cancel-btn {
+            background-color: #6c757d;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cancel-btn:hover {
+            background-color: #5a6268;
+        }
+
+        .board-view {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .board-view.active {
+            display: block;
+        }
+
+        .view-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .view-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .view-meta {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .view-meta span:first-child::after {
+            content: '|';
+            margin: 0 8px;
+            color: #ccc;
+        }
+
+        .view-content {
+            min-height: 200px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .list-btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #6c757d;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .list-btn:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS95olptlO1wIvD1sFAfAR8QrsMzAEswISagw&s">
+            So API
+        </div>
+        <div class="user-info">
+            <span>안녕하세요, 김상명(관리자)님</span>
+            <a href="#" class="logout-btn">로그아웃</a>
+        </div>
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <ul>
+                <li><a href="#">대시보드</a></li>
+                <li><a href="#">기준 관리</a></li>
+                <li><a href="#">생산 관리</a></li>
+                <li><a href="#">작업 관리</a></li>
+                <li><a href="#">품질 관리</a></li>
+                <li><a href="#">자재 관리</a></li>
+                <li><a href="#">사용자 관리</a></li>
+                <li><a href="note.html" class="active">게시판</a></li>
+            </ul>
+        </aside>
+        <div class="main-content">
+            <h1 class="page-title">공지사항</h1>
+            <div class="breadcrumb">홈 > 게시판 > 공지사항</div>
+            <div class="tab-menu">
+                <a href="note.html" class="tab-link active">공지사항</a>
+                <a href="freeboard.html" class="tab-link">자유게시판</a>
+            </div>
+
+            <div id="notice" class="board-content active">
+                <div class="board-list-section">
+                    <div class="search-section">
+                        <input type="text" placeholder="제목,내용 검색">
+                        <button class="search-btn">검색</button>
+                    </div>
+                    <table class="board-table">
+                        <thead>
+                            <tr>
+                                <th>번호</th>
+                                <th>제목</th>
+                                <th>작성자</th>
+                                <th>작성일</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                    </div>
+                </div>
+                <div class="write-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="notice-title">제목</label>
+                        <input type="text" id="notice-title" placeholder="제목을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="notice-content">내용</label>
+                        <textarea id="notice-content" placeholder="내용을 입력하세요"></textarea>
+                    </div>
+                    <div class="form-buttons">
+                        <button class="submit-btn" data-board="notice">등록</button>
+                        <button class="cancel-btn">취소</button>
+                    </div>
+                </div>
+                <div class="board-view" style="display: none;">
+                    <div class="view-header">
+                        <h2 id="view-title"></h2>
+                        <div class="view-meta">
+                            <span id="view-author"></span>
+                            <span id="view-date"></span>
+                        </div>
+                    </div>
+                    <div class="view-content" id="view-content"></div>
+                    <div class="board-actions">
+                        <button class="list-btn">목록으로</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const boardData = {
+                notice: [
+                    { id: 1, title: '시스템 점검 안내', author: '관리자', date: '2025-09-01T00:00:00Z', content: '보다 안정적인 서비스 제공을 위해 정기 시스템 점검이 진행될 예정입니다. 점검 시간 동안 서비스 이용이 일시적으로 제한될 수 있으니 양해 부탁드립니다.' },
+                    { id: 2, title: '새로운 기능 업데이트 공지', author: '관리자', date: '2025-08-25T00:00:00Z', content: '사용자 편의성 증진을 위한 새로운 기능이 추가되었습니다. 상세 내용은 공지사항을 확인해 주세요.' },
+                    { id: 3, title: '개인정보처리방침 개정 안내', author: '관리자', date: '2025-08-15T00:00:00Z', content: '개인정보처리방침이 개정되어 안내드립니다. 변경된 내용은 홈페이지를 통해 확인하실 수 있습니다.' },
+                    { id: 4, title: '서비스 이용 약관 변경 안내', author: '관리자', date: '2025-08-10T00:00:00Z', content: '서비스 이용 약관이 일부 변경되었습니다. 자세한 내용은 홈페이지에서 확인 가능합니다.' },
+                    { id: 5, title: '게시판 이용 수칙 안내', author: '관리자', date: '2025-08-05T00:00:00Z', content: '건전한 커뮤니티를 위해 게시판 이용 수칙을 준수해 주시기 바랍니다.' },
+                    { id: 6, title: '게시글 1', author: '관리자', date: '2025-07-25T00:00:00Z', content: '게시글, 게시글,게시글,게시글,게시글,게시글,게시글.' },
+                    { id: 7, title: '게시글 2', author: '관리자', date: '2025-07-20T00:00:00Z', content: '두 번째 게시글,게시글,게시글,게시글,게시글,게시글,게시글,.' },
+                    { id: 8, title: '게시글 3', author: '관리자', date: '2025-07-15T00:00:00Z', content: '세 번째 게시글,게시글,게시글,게시글,게시글,게시글,게시글,' },
+                    { id: 9, title: '게시글 4', author: '관리자', date: '2025-07-10T00:00:00Z', content: '네 번째 게시글,게시글,게시글,게시글,게시글,게시글,게시글,' }
+                ]
+            };
+
+            let nextPostId = 10;
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const boardContents = document.querySelectorAll('.board-content');
+            const writeButtons = document.querySelectorAll('.write-btn');
+            const cancelButtons = document.querySelectorAll('.cancel-btn');
+            const submitButtons = document.querySelectorAll('.submit-btn');
+            const searchButtons = document.querySelectorAll('.search-btn');
+            const searchInputs = document.querySelectorAll('.search-section input[type="text"]');
+            const listButtons = document.querySelectorAll('.list-btn');
+
+            const itemsPerPage = 5;
+            let currentPage = { notice: 1 };
+            let currentSearchTerm = { notice: '' };
+
+            function renderTable(boardType, page = 1) {
+                const data = boardData[boardType];
+                const table = document.querySelector(`#${boardType} .board-table tbody`);
+
+                const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                const filteredData = sortedData.filter(item =>
+                    item.title.toLowerCase().includes(currentSearchTerm[boardType]) ||
+                    item.content.toLowerCase().includes(currentSearchTerm[boardType]) ||
+                    item.author.toLowerCase().includes(currentSearchTerm[boardType])
+                );
+
+                if (!table) return;
+
+                table.innerHTML = '';
+
+                const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+                const start = (page - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const paginatedData = filteredData.slice(start, end);
+
+                if (paginatedData.length === 0) {
+                    table.innerHTML = `<tr><td colspan="4" style="text-align: center;">${currentSearchTerm[boardType] ? '검색 결과가 없습니다.' : '게시글이 없습니다.'}</td></tr>`;
+                    renderPagination(boardType, 1, 1);
+                    return;
+                }
+
+                paginatedData.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    const globalIndex = sortedData.indexOf(item);
+                    const postNumber = globalIndex + 1;
+                    row.innerHTML = `
+                        <td>${postNumber}</td>
+                        <td class="title"><a href="#" data-id="${item.id}">${item.title}</a></td>
+                        <td>${item.author}</td>
+                        <td>${item.date.slice(0, 10)}</td>
+                    `;
+                    table.appendChild(row);
+                });
+
+                renderPagination(boardType, totalPages, page);
+
+                document.querySelectorAll(`#${boardType} .board-table .title a`).forEach(link => {
+                    link.addEventListener('click', handlePostClick);
+                });
+            }
+
+            function renderPagination(boardType, totalPages, currentPageNum) {
+                const paginationDiv = document.querySelector(`#${boardType} .pagination`);
+                paginationDiv.innerHTML = '';
+
+                const maxPagesToShow = 5;
+                const startPage = Math.max(1, currentPageNum - Math.floor(maxPagesToShow / 2));
+                const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                if (totalPages > 1) {
+                    if (currentPageNum > 1) {
+                        const firstPageLink = document.createElement('a');
+                        firstPageLink.href = '#';
+                        firstPageLink.textContent = '<<';
+                        firstPageLink.dataset.page = 1;
+                        paginationDiv.appendChild(firstPageLink);
+
+                        const prevPageLink = document.createElement('a');
+                        prevPageLink.href = '#';
+                        prevPageLink.textContent = '<';
+                        prevPageLink.dataset.page = currentPageNum - 1;
+                        paginationDiv.appendChild(prevPageLink);
+                    }
+
+                    for (let i = startPage; i <= endPage; i++) {
+                        const pageLink = document.createElement('a');
+                        pageLink.href = '#';
+                        pageLink.textContent = i;
+                        pageLink.dataset.page = i;
+                        if (i === currentPageNum) {
+                            pageLink.classList.add('current-page');
+                        }
+                        paginationDiv.appendChild(pageLink);
+                    }
+
+                    if (currentPageNum < totalPages) {
+                        const nextPageLink = document.createElement('a');
+                        nextPageLink.href = '#';
+                        nextPageLink.textContent = '>';
+                        nextPageLink.dataset.page = currentPageNum + 1;
+                        paginationDiv.appendChild(nextPageLink);
+
+                        const lastPageLink = document.createElement('a');
+                        lastPageLink.href = '#';
+                        lastPageLink.textContent = '>>';
+                        lastPageLink.dataset.page = totalPages;
+                        paginationDiv.appendChild(lastPageLink);
+                    }
+                }
+            }
+
+            function handlePaginationClick(e) {
+                e.preventDefault();
+                const boardType = e.target.closest('.board-content').id;
+                const page = parseInt(e.target.dataset.page, 10);
+                if (page) {
+                    currentPage[boardType] = page;
+                    renderTable(boardType, page);
+                }
+            }
+
+            function showBoardView(boardType, postData) {
+                const boardSection = document.getElementById(boardType);
+                boardSection.querySelector('.board-list-section').style.display = 'none';
+                boardSection.querySelector('.write-form').style.display = 'none';
+
+                const boardView = boardSection.querySelector('.board-view');
+                boardView.style.display = 'block';
+
+                boardView.querySelector('h2#view-title').textContent = postData.title;
+                boardView.querySelector('span#view-author').textContent = `작성자: ${postData.author}`;
+                boardView.querySelector('span#view-date').textContent = `작성일: ${postData.date.slice(0, 10)}`;
+                boardView.querySelector('#view-content').innerHTML = postData.content.replace(/\n/g, '<br>');
+            }
+
+            function showBoardList(boardType) {
+                const boardSection = document.getElementById(boardType);
+                boardSection.querySelector('.board-list-section').style.display = 'block';
+                boardSection.querySelector('.write-form').style.display = 'none';
+                boardSection.querySelector('.board-view').style.display = 'none';
+
+                document.getElementById(`${boardType}-title`).value = '';
+                document.getElementById(`${boardType}-content`).value = '';
+
+                renderTable(boardType, currentPage[boardType]);
+            }
+
+            function handleWriteClick(e) {
+                const boardType = e.target.closest('.board-content').id;
+                const boardSection = document.getElementById(boardType);
+                boardSection.querySelector('.board-list-section').style.display = 'none';
+                boardSection.querySelector('.write-form').style.display = 'block';
+                boardSection.querySelector('.board-view').style.display = 'none';
+            }
+
+            function handleCancelClick(e) {
+                const boardType = e.target.closest('.board-content').id;
+                showBoardList(boardType);
+            }
+
+            function handleSubmitClick(e) {
+                const boardType = e.target.dataset.board;
+                const titleInput = document.getElementById(`${boardType}-title`);
+                const contentInput = document.getElementById(`${boardType}-content`);
+
+                const title = titleInput.value.trim();
+                const content = contentInput.value.trim();
+
+                if (title === '' || content === '') {
+                    alert('제목과 내용을 모두 입력해주세요.');
+                    return;
+                }
+
+                const newPost = {
+                    id: nextPostId++,
+                    title: title,
+                    author: '김상명',
+                    date: new Date().toISOString(),
+                    content: content
+                };
+
+                boardData[boardType].push(newPost);
+
+                titleInput.value = '';
+                contentInput.value = '';
+
+                currentPage[boardType] = 1;
+                showBoardList(boardType);
+                renderTable(boardType, currentPage[boardType]);
+            }
+
+            function handleSearch(boardType) {
+                const input = document.querySelector(`#${boardType} .search-section input[type="text"]`);
+                currentSearchTerm[boardType] = input.value.trim().toLowerCase();
+
+                currentPage[boardType] = 1;
+                renderTable(boardType, currentPage[boardType]);
+            }
+
+            function handlePostClick(e) {
+                e.preventDefault();
+                const boardType = e.target.closest('.board-content').id;
+                const postId = parseInt(e.target.dataset.id);
+                const postData = boardData[boardType].find(post => post.id === postId);
+
+                if (postData) {
+                    showBoardView(boardType, postData);
+                } else {
+                    console.error("게시글을 찾을 수 없습니다.");
+                }
+            }
+
+            function handleListClick(e) {
+                const boardType = e.target.closest('.board-content').id;
+                showBoardList(boardType);
+            }
+
+            writeButtons.forEach(btn => btn.addEventListener('click', handleWriteClick));
+            cancelButtons.forEach(btn => btn.addEventListener('click', handleCancelClick));
+            submitButtons.forEach(btn => btn.addEventListener('click', handleSubmitClick));
+            searchButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const boardType = e.target.closest('.board-content').id;
+                    handleSearch(boardType);
+                });
+            });
+            searchInputs.forEach(input => {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const boardType = e.target.closest('.board-content').id;
+                        handleSearch(boardType);
+                    }
+                });
+            });
+            listButtons.forEach(btn => btn.addEventListener('click', handleListClick));
+
+            boardContents.forEach(board => {
+                const paginationDiv = board.querySelector('.pagination');
+                paginationDiv.addEventListener('click', handlePaginationClick);
+            });
+
+            renderTable('notice', currentPage.notice);
+        });
+    </script>
+</body>
+
+</html>

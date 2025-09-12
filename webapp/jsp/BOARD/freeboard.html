@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자유게시판</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            color: #333;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 24px;
+            color: #4a5a70;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            text-decoration: none;
+            color: #fff;
+            background-color: #778899;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #5f6b7a;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #4a5a70;
+            padding: 20px 0;
+            color: #fff;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li a {
+            display: block;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar li a:hover,
+        .sidebar li a.active {
+            background-color: #5f6b7a;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #f4f7f9;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .breadcrumb {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .search-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .search-section input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #5bc0de;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .write-btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .write-btn:hover {
+            background-color: #218838;
+        }
+
+        .search-btn:hover {
+            background-color: #46b8da;
+        }
+
+        .board-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .board-table th,
+        .board-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .board-table thead th {
+            background-color: #f8f8f8;
+            font-weight: 600;
+        }
+
+        .board-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .board-table .title a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .board-table .title a:hover {
+            text-decoration: underline;
+        }
+
+        .board-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .pagination a,
+        .pagination span {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #555;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #eee;
+        }
+
+        .pagination .current-page {
+            background-color: #4a5a70;
+            color: #fff;
+            border-color: #4a5a70;
+            font-weight: bold;
+        }
+
+        .tab-menu {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-menu a {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 600;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .tab-menu a.active {
+            color: #4a5a70;
+        }
+
+        .tab-menu a.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 100%;
+            height: 2px;
+            background-color: #4a5a70;
+        }
+
+        .board-content {
+            display: none;
+        }
+
+        .board-content.active {
+            display: block;
+        }
+
+        /* 새롭게 추가된 CSS */
+        .write-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .write-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            min-height: 200px;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .submit-btn {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+
+        .cancel-btn {
+            background-color: #6c757d;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cancel-btn:hover {
+            background-color: #5a6268;
+        }
+
+        .board-view {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .board-view.active {
+            display: block;
+        }
+
+        .view-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .view-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .view-meta {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .view-meta span:first-child::after {
+            content: '|';
+            margin: 0 8px;
+            color: #ccc;
+        }
+
+        .view-content {
+            min-height: 200px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .list-btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #6c757d;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .list-btn:hover {
+            background-color: #5a6268;
+        }
+
+        /* 댓글 관련 CSS */
+        .comments-section {
+            margin-top: 40px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .comments-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .comment-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            /* 답글 쓰기 버튼 위치 지정 */
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 답글 들여쓰기 */
+        .comment-item.reply {
+            padding-left: 30px;
+            background-color: #fafafa;
+            border-left: 3px solid #778899;
+        }
+
+        .comment-meta {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #4a5a70;
+            margin-right: 10px;
+        }
+
+        .comment-date {
+            font-size: 12px;
+        }
+
+        .comment-content {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        .comment-form {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .comment-form .form-group {
+            margin-bottom: 10px;
+        }
+
+        .comment-form textarea {
+            min-height: 80px;
+        }
+
+        /* 답글 버튼 스타일 */
+        .reply-btn {
+            font-size: 12px;
+            color: #778899;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: color 0.2s;
+            float: right;
+            /* 오른쪽에 배치 */
+        }
+
+        .reply-btn:hover {
+            color: #4a5a70;
+        }
+
+        /* 답글 폼 스타일 */
+        .reply-form {
+            display: none;
+            margin-top: 10px;
+            padding-left: 20px;
+            border-left: 2px solid #ddd;
+        }
+
+        .reply-form.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS95olptlO1wIvD1sFAfAR8QrsMzAEswISagw&s">
+            So API
+        </div>
+        <div class="user-info">
+            <span>안녕하세요, 김상명(관리자)님</span>
+            <a href="#" class="logout-btn">로그아웃</a>
+        </div>
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <ul>
+                <li><a href="#">대시보드</a></li>
+                <li><a href="#">기준 관리</a></li>
+                <li><a href="#">생산 관리</a></li>
+                <li><a href="#">작업 관리</a></li>
+                <li><a href="#">품질 관리</a></li>
+                <li><a href="#">자재 관리</a></li>
+                <li><a href="#">사용자 관리</a></li>
+                <li><a href="note.html" class="active">게시판</a></li>
+            </ul>
+        </aside>
+        <div class="main-content">
+            <h1 class="page-title">자유게시판</h1>
+            <div class="breadcrumb">홈 > 게시판 > 자유게시판</div>
+            <div class="tab-menu">
+                <a href="note.html" class="tab-link">공지사항</a>
+                <a href="freeboard.html" class="tab-link active">자유게시판</a>
+            </div>
+
+            <div id="free" class="board-content active">
+                <div class="board-list-section">
+                    <div class="search-section">
+                        <input type="text" placeholder="제목,내용 검색">
+                        <button class="search-btn">검색</button>
+                        <button class="write-btn">글쓰기</button>
+                    </div>
+                    <table class="board-table">
+                        <thead>
+                            <tr>
+                                <th>번호</th>
+                                <th>제목</th>
+                                <th>작성자</th>
+                                <th>작성일</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                    </div>
+                </div>
+                <div class="write-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="free-title">제목</label>
+                        <input type="text" id="free-title" placeholder="제목을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="free-content">내용</label>
+                        <textarea id="free-content" placeholder="내용을 입력하세요"></textarea>
+                    </div>
+                    <div class="form-buttons">
+                        <button class="submit-btn" data-board="free">등록</button>
+                        <button class="cancel-btn">취소</button>
+                    </div>
+                </div>
+                <div class="board-view" style="display: none;">
+                    <div class="view-header">
+                        <h2 id="view-title"></h2>
+                        <div class="view-meta">
+                            <span id="view-author"></span>
+                            <span id="view-date"></span>
+                        </div>
+                    </div>
+                    <div class="view-content" id="view-content"></div>
+                    <div class="board-actions" id="post-actions">
+                        <button class="list-btn">목록으로</button>
+                    </div>
+                    <div class="comments-section">
+                        <h3 class="comments-header">댓글</h3>
+                        <div id="comments-list"></div>
+                        <div class="comment-form">
+                            <div class="form-group">
+                                <label for="comment-content">댓글 내용</label>
+                                <textarea id="comment-content" placeholder="댓글을 입력하세요"></textarea>
+                            </div>
+                            <button id="submit-comment-btn">댓글 등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const initialData = localStorage.getItem('boardData') ? JSON.parse(localStorage.getItem('boardData')) : {
+            free: [
+                { id: 1, title: '안녕하세요! 가입 인사드립니다.', author: '김김김', date: '2025-09-05', content: '안녕하세요, 오늘 가입했습니다. 잘 부탁드립니다!', comments: [{ id: 1, author: '관리자', date: '2025-09-05', content: '가입을 환영합니다!😊', parentId: null }] },
+                { id: 2, title: '게시판 사용법 궁금해요', author: '이이이', date: '2025-09-04', content: '게시판 사용법에 대해 궁금한 점이 있습니다. 혹시 설명해 주실 분 계신가요?', comments: [] },
+                { id: 3, title: '좋은 정보 감사합니다.', author: '박박박', date: '2025-09-03', content: '유용한 정보를 얻어갑니다. 감사합니다!', comments: [] },
+                { id: 4, title: '자유롭게 소통해요!', author: '최최최', date: '2025-09-02', content: '다양한 주제로 자유롭게 소통하고 싶습니다. 많은 참여 부탁드립니다.', comments: [] },
+                { id: 5, title: '첫 글 작성해봅니다', author: '고고고', date: '2025-09-01', content: '처음으로 글을 써보는데 잘 보일까요?', comments: [] },
+                { id: 6, title: '질문 있습니다!', author: '아아아', date: '2025-08-31', content: '궁금한 점이 있어 질문 남겨요. 답변 기다리겠습니다.', comments: [] },
+                { id: 7, title: '새로운 소식입니다.', author: '조조조', date: '2025-08-30', content: '최신 소식을 알려드립니다.', comments: [] },
+                { id: 8, title: '게시글이 더 필요해요', author: '한한한', date: '2025-08-29', content: '더 많은 글을 보고 싶네요.', comments: [] },
+                { id: 9, title: '반갑습니다!', author: '정정정', date: '2025-08-28', content: '모두 즐거운 하루 보내세요.', comments: [] }
+            ]
+        };
+
+        const boardData = initialData;
+
+        function findMaxId(data) {
+            return data.reduce((max, item) => Math.max(max, item.id), 0);
+        }
+
+        function findMaxCommentId(data) {
+            return data.reduce((max, post) => {
+                return post.comments.length > 0 ? Math.max(max, ...post.comments.map(c => c.id)) : max;
+            }, 0);
+        }
+
+        let nextPostId = findMaxId(boardData.free) + 1;
+        let nextCommentId = findMaxCommentId(boardData.free) + 1;
+        const currentUser = '김상명';
+        let currentPostId = null;
+        const itemsPerPage = 5;
+        let currentPage = { free: 1 };
+        let currentSearchTerm = { free: '' };
+
+        function saveData() {
+            localStorage.setItem('boardData', JSON.stringify(boardData));
+        }
+
+        function renderTable(boardType, page = 1) {
+            const table = document.querySelector(`#${boardType} .board-table tbody`);
+            if (!table) return;
+
+            const sortedData = [...boardData[boardType]].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const filteredData = sortedData.filter(item =>
+                item.title.toLowerCase().includes(currentSearchTerm[boardType]) ||
+                item.content.toLowerCase().includes(currentSearchTerm[boardType]) ||
+                item.author.toLowerCase().includes(currentSearchTerm[boardType])
+            );
+
+            const totalItems = filteredData.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedData = filteredData.slice(start, end);
+
+            table.innerHTML = '';
+            if (paginatedData.length === 0) {
+                table.innerHTML = `<tr><td colspan="4" style="text-align: center;">${currentSearchTerm[boardType] ? '검색 결과가 없습니다.' : '게시글이 없습니다.'}</td></tr>`;
+                renderPagination(boardType, 1, 1);
+                return;
+            }
+
+            paginatedData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                const globalIndex = sortedData.findIndex(post => post.id === item.id) + 1;
+                row.innerHTML = `
+                    <td>${globalIndex}</td>
+                    <td class="title"><a href="#" data-id="${item.id}">${item.title}</a></td>
+                    <td>${item.author}</td>
+                    <td>${item.date}</td>
+                `;
+                table.appendChild(row);
+            });
+
+            renderPagination(boardType, totalPages, page);
+        }
+
+        function renderPagination(boardType, totalPages, currentPageNum) {
+            const paginationDiv = document.querySelector(`#${boardType} .pagination`);
+            paginationDiv.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            const maxPagesToShow = 5;
+            let startPage = Math.max(1, currentPageNum - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+            if (endPage - startPage + 1 < maxPagesToShow) {
+                startPage = Math.max(1, endPage - maxPagesToShow + 1);
+            }
+
+            if (currentPageNum > 1) {
+                paginationDiv.innerHTML += `<a href="#" data-page="1"><<</a><a href="#" data-page="${currentPageNum - 1}"><</a>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                paginationDiv.innerHTML += `<a href="#" data-page="${i}" class="${i === currentPageNum ? 'current-page' : ''}">${i}</a>`;
+            }
+
+            if (currentPageNum < totalPages) {
+                paginationDiv.innerHTML += `<a href="#" data-page="${currentPageNum + 1}">></a><a href="#" data-page="${totalPages}">>></a>`;
+            }
+        }
+
+        function renderComments(comments, parentId = null) {
+            const commentsList = document.getElementById('comments-list');
+            if (parentId === null) {
+                commentsList.innerHTML = '';
+            }
+
+            const nestedComments = comments.filter(comment => comment.parentId === parentId).sort((a, b) => a.id - b.id);
+            nestedComments.forEach(comment => {
+                const commentItem = document.createElement('div');
+                commentItem.classList.add('comment-item');
+                if (comment.parentId !== null) {
+                    commentItem.classList.add('reply');
+                }
+
+                let actionButtons = '';
+                if (comment.author === currentUser) {
+                    actionButtons = `<button class="modify-comment-btn" data-id="${comment.id}">수정</button><button class="delete-comment-btn" data-id="${comment.id}">삭제</button>`;
+                }
+
+                commentItem.innerHTML = `
+                    <div class="comment-meta">
+                        <span class="comment-author">${comment.author}</span>
+                        <span class="comment-date">${comment.date}</span>
+                        <button class="reply-btn" data-id="${comment.id}">답글</button>
+                        ${actionButtons}
+                    </div>
+                    <div class="comment-content">${comment.content.replace(/\n/g, '<br>')}</div>
+                    <div class="modify-form" style="display: none;">
+                        <textarea>${comment.content}</textarea>
+                        <button class="submit-modify-btn" data-id="${comment.id}">수정</button>
+                        <button class="cancel-modify-btn">취소</button>
+                    </div>
+                    <div class="reply-form" id="reply-form-${comment.id}" style="display: none;">
+                        <div class="form-group">
+                            <textarea id="reply-content-${comment.id}" placeholder="답글을 입력하세요"></textarea>
+                        </div>
+                        <button class="submit-reply-btn" data-parent-id="${comment.id}">등록</button>
+                    </div>
+                `;
+                commentsList.appendChild(commentItem);
+                renderComments(comments, comment.id);
+            });
+
+            if (parentId === null && comments.length === 0) {
+                commentsList.innerHTML = '<div style="text-align: center; color: #888;">아직 댓글이 없습니다.</div>';
+            }
+        }
+
+        function showBoardList(boardType) {
+            const boardSection = document.getElementById(boardType);
+            boardSection.querySelector('.board-list-section').style.display = 'block';
+            boardSection.querySelector('.write-form').style.display = 'none';
+            boardSection.querySelector('.board-view').style.display = 'none';
+            document.getElementById(`${boardType}-title`).value = '';
+            document.getElementById(`${boardType}-content`).value = '';
+            currentPostId = null;
+            renderTable(boardType, currentPage[boardType]);
+        }
+
+        function showWriteForm(boardType, postData = null) {
+            const boardSection = document.getElementById(boardType);
+            boardSection.querySelector('.board-list-section').style.display = 'none';
+            boardSection.querySelector('.board-view').style.display = 'none';
+            const writeForm = boardSection.querySelector('.write-form');
+            writeForm.style.display = 'block';
+
+            const submitBtn = writeForm.querySelector('.submit-btn');
+            if (postData) {
+                writeForm.querySelector('#free-title').value = postData.title;
+                writeForm.querySelector('#free-content').value = postData.content;
+                submitBtn.dataset.action = 'modify';
+                submitBtn.dataset.postId = postData.id;
+                submitBtn.textContent = '수정';
+            } else {
+                writeForm.querySelector('#free-title').value = '';
+                writeForm.querySelector('#free-content').value = '';
+                submitBtn.dataset.action = 'write';
+                delete submitBtn.dataset.postId;
+                submitBtn.textContent = '등록';
+            }
+        }
+
+        function showBoardView(boardType, postData) {
+            const boardSection = document.getElementById(boardType);
+            boardSection.querySelector('.board-list-section').style.display = 'none';
+            boardSection.querySelector('.write-form').style.display = 'none';
+            const boardView = boardSection.querySelector('.board-view');
+            boardView.style.display = 'block';
+
+            boardView.querySelector('h2#view-title').textContent = postData.title;
+            boardView.querySelector('span#view-author').textContent = `작성자: ${postData.author}`;
+            boardView.querySelector('span#view-date').textContent = `작성일: ${postData.date}`;
+            boardView.querySelector('#view-content').innerHTML = postData.content.replace(/\n/g, '<br>');
+
+            const postActions = boardView.querySelector('#post-actions');
+            postActions.innerHTML = '';
+            if (postData.author === currentUser) {
+                postActions.innerHTML = `
+                    <button id="modify-post-btn" data-id="${postData.id}">수정</button>
+                    <button id="delete-post-btn" data-id="${postData.id}">삭제</button>
+                `;
+            }
+
+            renderComments(postData.comments);
+            currentPostId = postData.id;
+        }
+
+        function handleEvent(e) {
+            const target = e.target;
+            const boardType = target.closest('.board-content')?.id || 'free';
+
+            // 게시글 목록, 보기, 작성/수정
+            if (target.classList.contains('write-btn')) {
+                showWriteForm(boardType);
+            } else if (target.classList.contains('cancel-btn')) {
+                showBoardList(boardType);
+            } else if (target.classList.contains('submit-btn')) {
+                e.preventDefault();
+                const title = document.getElementById(`${boardType}-title`).value.trim();
+                const content = document.getElementById(`${boardType}-content`).value.trim();
+                const action = target.dataset.action || 'write';
+
+                if (!title || !content) {
+                    alert('제목과 내용을 모두 입력해주세요.');
+                    return;
+                }
+
+                if (action === 'modify') {
+                    const postId = parseInt(target.dataset.postId, 10);
+                    const postToModify = boardData[boardType].find(post => post.id === postId);
+                    if (postToModify) {
+                        postToModify.title = title;
+                        postToModify.content = content;
+                        saveData();
+                        showBoardView(boardType, postToModify);
+                    }
+                } else {
+                    const newPost = {
+                        id: nextPostId++,
+                        title: title,
+                        author: currentUser,
+                        date: new Date().toISOString().slice(0, 10),
+                        content: content,
+                        comments: []
+                    };
+                    boardData[boardType].unshift(newPost); // 최신 글이 맨 위로 오도록 unshift 사용
+                    saveData();
+                    currentSearchTerm[boardType] = '';
+                    showBoardList(boardType);
+                }
+            } else if (target.classList.contains('search-btn')) {
+                const input = document.querySelector(`#${boardType} .search-section input[type="text"]`);
+                currentSearchTerm[boardType] = input.value.trim().toLowerCase();
+                currentPage[boardType] = 1;
+                renderTable(boardType, currentPage[boardType]);
+            } else if (target.closest('.board-table .title a')) {
+                e.preventDefault();
+                const postId = parseInt(target.dataset.id, 10);
+                const postData = boardData[boardType].find(post => post.id === postId);
+                if (postData) {
+                    showBoardView(boardType, postData);
+                }
+            } else if (target.id === 'modify-post-btn') {
+                const postId = parseInt(target.dataset.id, 10);
+                const postToModify = boardData[boardType].find(post => post.id === postId);
+                if (postToModify) {
+                    showWriteForm(boardType, postToModify);
+                }
+            } else if (target.id === 'delete-post-btn') {
+                if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+                    const postId = parseInt(target.dataset.id, 10);
+                    const postIndex = boardData[boardType].findIndex(post => post.id === postId);
+                    if (postIndex !== -1) {
+                        boardData[boardType].splice(postIndex, 1);
+                        saveData();
+                        showBoardList(boardType);
+                    }
+                }
+            } else if (target.classList.contains('list-btn')) {
+                showBoardList(boardType);
+            }
+
+            // 페이지네이션
+            if (target.closest('.pagination a')) {
+                e.preventDefault();
+                const page = parseInt(target.dataset.page, 10);
+                if (page) {
+                    currentPage[boardType] = page;
+                    renderTable(boardType, page);
+                }
+            }
+
+            // 댓글 기능
+            if (target.id === 'submit-comment-btn') {
+                const contentInput = document.getElementById('comment-content');
+                const content = contentInput.value.trim();
+                if (!content) {
+                    alert('내용을 입력해주세요.');
+                    return;
+                }
+                const currentPost = boardData[boardType].find(post => post.id === currentPostId);
+                if (currentPost) {
+                    const newComment = {
+                        id: nextCommentId++,
+                        author: currentUser,
+                        date: new Date().toISOString().slice(0, 10),
+                        content: content,
+                        parentId: null
+                    };
+                    currentPost.comments.push(newComment);
+                    saveData();
+                    renderComments(currentPost.comments);
+                    contentInput.value = '';
+                }
+            } else if (target.classList.contains('reply-btn')) {
+                const parentId = parseInt(target.dataset.id, 10);
+                const replyForm = document.getElementById(`reply-form-${parentId}`);
+                document.querySelectorAll('.reply-form').forEach(form => {
+                    if (form.id !== `reply-form-${parentId}`) {
+                        form.style.display = 'none';
+                    }
+                });
+                replyForm.style.display = (replyForm.style.display === 'block') ? 'none' : 'block';
+            } else if (target.classList.contains('submit-reply-btn')) {
+                const parentId = parseInt(target.dataset.parentId, 10);
+                const contentInput = document.getElementById(`reply-content-${parentId}`);
+                const content = contentInput.value.trim();
+                if (!content) {
+                    alert('내용을 입력해주세요.');
+                    return;
+                }
+                const newComment = {
+                    id: nextCommentId++,
+                    author: currentUser,
+                    date: new Date().toISOString().slice(0, 10),
+                    content: content,
+                    parentId: parentId
+                };
+                const currentPost = boardData[boardType].find(post => post.id === currentPostId);
+                if (currentPost) {
+                    currentPost.comments.push(newComment);
+                    saveData();
+                    renderComments(currentPost.comments);
+                    contentInput.value = '';
+                }
+            } else if (target.classList.contains('modify-comment-btn')) {
+                const commentItem = target.closest('.comment-item');
+                const commentContent = commentItem.querySelector('.comment-content');
+                const modifyForm = commentItem.querySelector('.modify-form');
+                document.querySelectorAll('.reply-form').forEach(form => form.style.display = 'none');
+                document.querySelectorAll('.modify-form').forEach(form => form.style.display = 'none');
+                document.querySelectorAll('.comment-content').forEach(content => content.style.display = 'block');
+                commentContent.style.display = 'none';
+                modifyForm.style.display = 'block';
+            } else if (target.classList.contains('submit-modify-btn')) {
+                const commentId = parseInt(target.dataset.id, 10);
+                const commentItem = target.closest('.comment-item');
+                const newContent = commentItem.querySelector('.modify-form textarea').value.trim();
+                if (!newContent) {
+                    alert('수정할 내용을 입력해주세요.');
+                    return;
+                }
+                const currentPost = boardData[boardType].find(post => post.id === currentPostId);
+                const commentToModify = currentPost.comments.find(c => c.id === commentId);
+                if (commentToModify) {
+                    commentToModify.content = newContent;
+                    saveData();
+                    renderComments(currentPost.comments);
+                }
+            } else if (target.classList.contains('cancel-modify-btn')) {
+                const commentItem = target.closest('.comment-item');
+                commentItem.querySelector('.comment-content').style.display = 'block';
+                commentItem.querySelector('.modify-form').style.display = 'none';
+            } else if (target.classList.contains('delete-comment-btn')) {
+                if (confirm('정말로 이 댓글과 모든 대댓글을 삭제하시겠습니까?')) {
+                    const commentId = parseInt(target.dataset.id, 10);
+                    const currentPost = boardData[boardType].find(post => post.id === currentPostId);
+                    if (currentPost) {
+                        function getCommentIdsToDelete(comments, commentId) {
+                            const idsToDelete = [commentId];
+                            comments.filter(c => c.parentId === commentId).forEach(reply => {
+                                idsToDelete.push(...getCommentIdsToDelete(comments, reply.id));
+                            });
+                            return idsToDelete;
+                        }
+                        const idsToDelete = getCommentIdsToDelete(currentPost.comments, commentId);
+                        currentPost.comments = currentPost.comments.filter(c => !idsToDelete.includes(c.id));
+                        saveData();
+                        renderComments(currentPost.comments);
+                    }
+                }
+            }
+        }
+
+        // 전체 문서에 단일 이벤트 리스너 등록
+        document.addEventListener('click', handleEvent);
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.target.closest('.search-section')) {
+                handleEvent(e);
+            }
+        });
+
+        // 초기 화면 렌더링
+        renderTable('free', currentPage.free);
+    });
+</script>
+</body>
+
+</html>

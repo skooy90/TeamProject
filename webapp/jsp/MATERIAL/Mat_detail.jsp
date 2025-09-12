@@ -9,7 +9,7 @@
     <c:set var="ctx" value="${pageContext.request.contextPath}" />
     
   <link rel="stylesheet" href="${ctx}/css/material_detail.css">
-  <link rel="stylesheet" href="${ctx}/src/Header_Side/style.css">
+  <link rel="stylesheet" href="${ctx}/Header_Side/style.css">
   
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -84,44 +84,14 @@
             </div>
         </div>
 
-        <!-- 관련 제품 비교 그래프 -->
-        <div class="chart-section">
-            <h2 class="chart-title">같은 제품의 다른 재고 비교</h2>
-            <div class="chart-container">
-                <canvas id="comparisonChart"></canvas>
-            </div>
-        </div>
-
-        <!-- 재고 이력 테이블 -->
-        <div class="history-section">
-            <h2 class="history-title">재고 이력</h2>
-            <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>날짜</th>
-                        <th>구분</th>
-                        <th>수량</th>
-                        <th>담당자</th>
-                        <th>비고</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 20px; color: #6c757d;">
-                            재고 이력이 없습니다.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
         <!-- 통계 정보 카드 -->
         <div class="stats-section">
             <h2 class="stats-title">재고 통계</h2>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-number">${relatedMaterials != null ? relatedMaterials.size() : 0}</div>
-                    <div class="stat-label">같은 제품 재고</div>
+                    <div class="stat-label">전체 제품 재고</div>
+					<!-- 기준코드가 같은 제품의 총 합 -->
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">${material.maQuantity}</div>

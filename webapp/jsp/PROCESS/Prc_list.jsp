@@ -11,7 +11,7 @@
     <c:set var="ctx" value="${pageContext.request.contextPath}" />
     
   <link rel="stylesheet" href="${ctx}/css/process_list.css">
-  <link rel="stylesheet" href="${ctx}/src/Header_Side/style.css">
+  <link rel="stylesheet" href="${ctx}/Header_Side/style.css">
   
 </head>
 <body>
@@ -22,26 +22,24 @@
         
         <div class="content-area">
             <div class="container">
-                <!-- 헤더 섹션 -->
+                <h1>공정 관리</h1>
+
+                <!-- 검색 & 등록 -->
                 <div class="controls">
-                    <h1 class="page-title">공정 관리</h1>
-                    <div class="search-section">
-                        <div class="filter-buttons">
-                            <a href="${pageContext.request.contextPath}/process/filter?type=all" class="filter-btn ${filterType == 'all' || filterType == null ? 'active' : ''}">전체</a>
-                            <a href="${pageContext.request.contextPath}/process/filter?type=SEMI" class="filter-btn ${filterType == 'SEMI' ? 'active' : ''}">반제품 라우팅</a>
-                            <a href="${pageContext.request.contextPath}/process/filter?type=FINISH" class="filter-btn ${filterType == 'FINISH' ? 'active' : ''}">완제품 라우팅</a>
-                        </div>
-                        <form action="${pageContext.request.contextPath}/process/search" method="get" class="search-form">
-                            <input type="text" name="searchKeyword" placeholder="공정번호, 제품명, 공정설명 검색..." value="${searchKeyword}" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                            <select name="searchType" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                                <option value="all" ${searchType == 'all' ? 'selected' : ''}>전체</option>
-                                <option value="code" ${searchType == 'code' ? 'selected' : ''}>공정번호</option>
-                                <option value="name" ${searchType == 'name' ? 'selected' : ''}>제품명</option>
-                            </select>
-                            <button type="submit" class="btn btn-primary">검색</button>
-                        </form>
-                        <a href="${pageContext.request.contextPath}/process/form" class="btn btn-primary">공정 등록</a>
-                    </div>
+                    <form class="search-form"
+                        action="${pageContext.request.contextPath}/process/search"
+                        method="get">
+                        <select name="searchType" class="search-select">
+                            <option value="all" ${searchType == 'all' ? 'selected' : ''}>전체 검색</option>
+                            <option value="code" ${searchType == 'code' ? 'selected' : ''}>공정번호</option>
+                            <option value="name" ${searchType == 'name' ? 'selected' : ''}>제품명</option>
+                        </select>
+                        <input type="text" class="search-input" name="searchKeyword"
+                            placeholder="검색어를 입력하세요" value="${searchKeyword}">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+                    <a href="${pageContext.request.contextPath}/process/form"
+                        class="btn btn-success">공정 등록</a>
                 </div>
 
                 <!-- 통계 정보 -->
@@ -57,10 +55,6 @@
                     <div class="stat-card">
                         <h3>완제품 공정</h3>
                         <p class="number">${finishProcessCount}</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>혼합 공정</h3>
-                        <p class="number">${mixProcessCount}</p>
                     </div>
                 </div>
 

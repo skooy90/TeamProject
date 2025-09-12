@@ -11,7 +11,7 @@
         <c:set var="ctx" value="${pageContext.request.contextPath}" />
     
   <link rel="stylesheet" href="${ctx}/css/bom_list.css">
-  <link rel="stylesheet" href="${ctx}/src/Header_Side/style.css">
+  <link rel="stylesheet" href="${ctx}/Header_Side/style.css">
 </head>
 <body>
     <jsp:include page="../../Header_Side/header.jsp" />
@@ -19,50 +19,40 @@
     <div class="main-container">
         <jsp:include page="../../Header_Side/sidebar.jsp" />
         
-                <div class="content-area">
+        <div class="content-area">
             <div class="container">
-                <!-- 헤더 섹션 -->
+                <h1>BOM 관리</h1>
+
+                <!-- 검색 & 등록 -->
                 <div class="controls">
-                    <h1 class="page-title">BOM 관리</h1>
-                    
-                    <!-- 검색 섹션 -->
-                    <div class="search-section">
-                        <form action="${pageContext.request.contextPath}/bom/search" method="get" class="search-form">
-                            <div class="search-controls">
-                                <select name="searchType" class="search-select">
-                                    <option value="all" ${searchType == 'all' ? 'selected' : ''}>전체 검색</option>
-                                    <option value="code" ${searchType == 'code' ? 'selected' : ''}>라우팅번호</option>
-                                    <option value="name" ${searchType == 'name' ? 'selected' : ''}>라우팅명</option>
-                                </select>
-                                <input type="text" name="searchKeyword" value="${searchKeyword}" placeholder="검색어를 입력하세요" class="search-input">
-                                <button type="submit" class="search-btn">검색</button>
-                                <a href="${pageContext.request.contextPath}/bom" class="reset-btn">초기화</a>
-                            </div>
-                        </form>
-                    </div>
-                    
-                    <!-- 필터 버튼 -->
-                    <div class="filter-section">
-                        <div class="filter-buttons">
-                            <a href="${pageContext.request.contextPath}/bom/filter?type=all" class="filter-btn ${filterType == 'all' || filterType == null ? 'active' : ''}">전체</a>
-                            <a href="${pageContext.request.contextPath}/bom/filter?type=SEMI" class="filter-btn ${filterType == 'SEMI' ? 'active' : ''}">반제품 라우팅</a>
-                            <a href="${pageContext.request.contextPath}/bom/filter?type=FINISH" class="filter-btn ${filterType == 'FINISH' ? 'active' : ''}">완제품 라우팅</a>
-                        </div>
-                    </div>
+                    <form class="search-form"
+                        action="${pageContext.request.contextPath}/bom/search"
+                        method="get">
+                        <select name="searchType" class="search-select">
+                            <option value="all" ${searchType == 'all' ? 'selected' : ''}>전체 검색</option>
+                            <option value="code" ${searchType == 'code' ? 'selected' : ''}>BOM번호</option>
+                            <option value="name" ${searchType == 'name' ? 'selected' : ''}>BOM명</option>
+                        </select>
+                        <input type="text" class="search-input" name="searchKeyword"
+                            placeholder="검색어를 입력하세요" value="${searchKeyword}">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+                    <a href="${pageContext.request.contextPath}/bom/form"
+                        class="btn btn-success">BOM 등록</a>
                 </div>
 
                 <!-- 통계 정보 -->
                 <div class="stats-section">
                     <div class="stat-card">
-                        <h3>전체 라우팅</h3>
+                        <h3>전체 BOM</h3>
                         <p class="number">${totalCount}</p>
                     </div>
                     <div class="stat-card">
-                        <h3>반제품 라우팅</h3>
+                        <h3>반제품 BOM</h3>
                         <p class="number">${semiBOMCount}</p>
                     </div>
                     <div class="stat-card">
-                        <h3>완제품 라우팅</h3>
+                        <h3>완제품 BOM</h3>
                         <p class="number">${finishBOMCount}</p>
                     </div>
                 </div>
@@ -72,8 +62,8 @@
                     <div class="search-result-info" style="background: #e3f2fd; padding: 10px; border-radius: 4px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
                         <strong>검색 결과:</strong> 
                         "<span style="color: #1976d2;">${searchKeyword}</span>" 
-                        (${searchType == 'all' ? '전체 검색' : searchType == 'code' ? '라우팅번호' : '라우팅명'}) 
-                        - <strong>${bomList != null ? bomList.size() : 0}개</strong> 라우팅 발견
+                        (${searchType == 'all' ? '전체 검색' : searchType == 'code' ? 'BOM번호' : 'BOM명'}) 
+                        - <strong>${bomList != null ? bomList.size() : 0}개</strong> BOM 발견
                     </div>
                 </c:if>
 
@@ -82,11 +72,11 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>라우팅번호</th>
+                                <th>BOM번호</th>
                                 <th>제품코드</th>
-                                <th>라우팅명</th>
-                                <th>라우팅 타입</th>
-                                <th>공정 단계</th>
+                                <th>BOM명</th>
+                                <th>BOM 유형</th>
+                                <th>BOM 순서</th>
                                 <th>관리</th>
                             </tr>
                         </thead>
@@ -94,20 +84,16 @@
                             <c:choose>
                                 <c:when test="${bomList != null && !bomList.isEmpty()}">
                                     <c:forEach var="bom" items="${bomList}">
-                                        <tr data-type="${bom.stType}">
+                                        <tr>
                                             <td>${bom.bomNo}</td>
                                             <td>${bom.standardCode}</td>
                                             <td><a href="${pageContext.request.contextPath}/bom/detail?code=${bom.standardCode}" class="detail-link">${bom.bomDescription}</a></td>
                                             <td>
-                                                <span class="routing-badge ${bom.stType == 'SEMI' ? 'routing-semi' : 'routing-finish'}">
-                                                    ${bom.stType == 'SEMI' ? '반제품' : '완제품'}
+                                                <span class="routing-badge ${bom.bomType == '원자재' ? 'routing-raw' : bom.bomType == '반제품' ? 'routing-semi' : 'routing-finish'}">
+                                                    ${bom.bomType}
                                                 </span>
                                             </td>
-                                            <td>
-                                                <span class="step-badge ${bom.stType == 'SEMI' ? 'step-semi' : 'step-finish'}">
-                                                    ${bom.bomOrder}단계
-                                                </span>
-                                            </td>
+                                            <td>${bom.bomOrder}</td>
                                             <td class="action-links">
                                                 <a href="${pageContext.request.contextPath}/bom/form?code=${bom.standardCode}" class="edit">수정</a>
                                                 <a href="${pageContext.request.contextPath}/bom/delete?code=${bom.standardCode}" class="delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
@@ -118,7 +104,7 @@
                                 <c:otherwise>
                                     <tr>
                                         <td colspan="6" style="text-align: center; padding: 20px; color: #6c757d;">
-                                            등록된 라우팅이 없습니다.
+                                            등록된 BOM이 없습니다.
                                         </td>
                                     </tr>
                                 </c:otherwise>

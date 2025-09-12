@@ -10,8 +10,8 @@
     <title>BOM 등록/수정 - MES 시스템</title>
        <c:set var="ctx" value="${pageContext.request.contextPath}" />
     
-  <link rel="stylesheet" href="${ctx}/css/bom_form.css">
-  <link rel="stylesheet" href="${ctx}/src/Header_Side/style.css">
+  <link rel="stylesheet" href="${ctx}/css/bom_form.css?v=1.1" type="text/css">
+  <link rel="stylesheet" href="${ctx}/Header_Side/style.css" type="text/css">
 </head>
 <body>
     <jsp:include page="../../Header_Side/header.jsp" />
@@ -22,17 +22,53 @@
         <div class="content-area">
             <div class="container">
                 <!-- 페이지 헤더 -->
-                <div class="page-header">
-                    <h1 class="page-title">${mode == 'update' ? 'BOM 수정' : 'BOM 등록'}</h1>
-                    <a href="${pageContext.request.contextPath}/bom" class="back-btn">목록으로</a>
+                <div class="detail-header">
+                    <div class="header-info">
+                        <h1>${mode == 'update' ? 'BOM 수정' : 'BOM 등록'}</h1>
+                        <span class="routing-type">${mode == 'update' ? (bom.bomType == '원자재' ? '원자재 BOM' : bom.bomType == '반제품' ? '반제품 BOM' : '완제품 BOM') : 'BOM 등록'}</span>
+                    </div>
+                    <div class="header-actions">
+                        <a href="${pageContext.request.contextPath}/bom" class="btn btn-secondary">목록으로</a>
+                    </div>
+                </div>
+
+                <!-- 기본 정보 카드 -->
+                <div class="grid-container">
+                    <div class="info-card">
+                        <h3>BOM 기본 정보</h3>
+                        <div class="info-item">
+                            <span class="info-label">BOM 번호</span>
+                            <span class="info-value">${mode == 'update' ? bom.bomNo : '자동 생성'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">제품 코드</span>
+                            <span class="info-value">${mode == 'update' ? bom.standardCode : '선택 필요'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">제품명</span>
+                            <span class="info-value">${mode == 'update' ? bom.stName : '선택 필요'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">BOM 유형</span>
+                            <span class="info-value">${mode == 'update' ? bom.bomType : '선택 필요'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>자재 사용량 미리보기</h3>
+                        <div id="materialsPreview" class="chart-container">
+                            <p>제품을 선택하면 자재 사용량이 표시됩니다.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <form id="bomForm" method="post" action="${pageContext.request.contextPath}/bom/${mode == 'update' ? 'update' : 'insert'}">
                     <!-- 기본 정보 섹션 -->
-                    <div class="form-section">
-                        <h2 class="section-title">기본 정보</h2>
+                    <div class="form-header">
+                        <h2>BOM 기본 정보</h2>
+                    </div>
                         
-                        <div class="form-row">
+                    <div class="form-container">
                             <div class="form-group">
                                 <label for="bomNo">BOM번호 *</label>
                                 <input type="text" id="bomNo" name="bomNo" 
@@ -57,10 +93,8 @@
                                     </c:otherwise>
                                 </c:choose>
                                 <div class="error-message" id="standardCodeError"></div>
-                            </div>
                         </div>
 
-                        <div class="form-row">
                             <div class="form-group">
                                 <label for="bomDescription">BOM 설명 *</label>
                                 <input type="text" id="bomDescription" name="bomDescription" 
@@ -71,17 +105,22 @@
                             
                             <div class="form-group">
                                 <label for="bomType">BOM 유형 *</label>
+                            <c:choose>
+                                <c:when test="${mode == 'update'}">
+                                    <input type="text" id="bomType" name="bomType" value="${bom.bomType}" readonly>
+                                </c:when>
+                                <c:otherwise>
                                 <select id="bomType" name="bomType" required>
                                     <option value="">유형을 선택하세요</option>
-                                    <option value="원자재" ${mode == 'update' && bom.bomType == '원자재' ? 'selected' : ''}>원자재</option>
-                                    <option value="반제품" ${mode == 'update' && bom.bomType == '반제품' ? 'selected' : ''}>반제품</option>
-                                    <option value="완제품" ${mode == 'update' && bom.bomType == '완제품' ? 'selected' : ''}>완제품</option>
+                                        <option value="원자재">원자재</option>
+                                        <option value="반제품">반제품</option>
+                                        <option value="완제품">완제품</option>
                                 </select>
+                                </c:otherwise>
+                            </c:choose>
                                 <div class="error-message" id="bomTypeError"></div>
-                            </div>
                         </div>
 
-                        <div class="form-row">
                             <div class="form-group">
                                 <label for="bomOrder">BOM 순서 *</label>
                                 <input type="number" id="bomOrder" name="bomOrder" 
@@ -94,74 +133,48 @@
                                 <label for="bomImage">BOM 이미지</label>
                                 <input type="file" id="bomImage" name="bomImage" accept="image/*">
                                 <div class="error-message" id="bomImageError"></div>
-                            </div>
                         </div>
                     </div>
 
                     <!-- 자재 정보 섹션 -->
                     <div class="materials-section">
                         <div class="materials-header">
-                            <h2 class="section-title">자재 정보</h2>
-                            <button type="button" class="add-material-btn" onclick="addMaterialRow()">자재 추가</button>
+                            <div>
+                                <h2>제품별 자재 사용량 ${mode == 'update' ? '(수정)' : ''}</h2>
+                                <c:if test="${mode == 'update'}">
+                                    <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9em;">
+                                        기존 자재를 수정하거나 새로운 자재를 추가할 수 있습니다.
+                                    </p>
+                                </c:if>
+                            </div>
+                            <div class="materials-controls">
+                                <button type="button" class="btn btn-primary" onclick="addMaterialRow()">
+                                    <i class="fas fa-plus"></i> 자재 추가
+                                </button>
+                                <c:if test="${mode != 'update'}">
+                                    <button type="button" class="btn btn-secondary" onclick="resetMaterials()">
+                                        <i class="fas fa-undo"></i> 기본값으로 초기화
+                                    </button>
+                                </c:if>
+                            </div>
                         </div>
 
-                        <table class="materials-table">
-                            <thead>
-                                <tr>
-                                    <th>자재코드</th>
-                                    <th>자재명</th>
-                                    <th>필요수량</th>
-                                    <th>단위</th>
-                                    <th>비고</th>
-                                    <th>관리</th>
-                                </tr>
-                            </thead>
-                            <tbody id="materialsTableBody">
+                        <div id="materialsDetail" class="materials-detail">
                                 <c:choose>
-                                    <c:when test="${mode == 'update'}">
-                                        <!-- 수정 모드: 기존 자재 데이터 표시 -->
-                                        <c:forEach var="material" items="${materials}" varStatus="status">
-                                        <tr class="material-row">
-                                            <td>
-                                                <select name="materialCode" required onchange="updateMaterialInfo(this)">
-                                                    <option value="">자재를 선택하세요</option>
-                                                    <c:forEach var="allMaterial" items="${allMaterials}">
-                                                        <option value="${allMaterial.materialCode}" 
-                                                                ${material.materialCode == allMaterial.materialCode ? 'selected' : ''}>
-                                                            ${allMaterial.materialCode} - ${allMaterial.materialName}
-                                                        </option>
-                                                    </c:forEach>
-                                                </select>
-                                            </td>
-                                            <td><input type="text" value="${material.materialName}" readonly></td>
-                                            <td><input type="number" name="quantity" value="${material.bomQuantity}" step="0.1" min="0.1" required></td>
-                                            <td><input type="text" value="${material.unit}" readonly></td>
-                                            <td><input type="text" name="remark" value="${material.remark}" placeholder="비고"></td>
-                                            <td><button type="button" class="remove-material-btn" onclick="removeMaterialRow(this)">삭제</button></td>
-                                        </tr>
-                                        </c:forEach>
-                                    </c:when>
+                                <c:when test="${mode == 'update'}">
+                                    <!-- 수정 모드: 기존 자재 데이터 표시 -->
+                                    <div id="updateMaterials">
+                                        <div class="loading-message">
+                                            <p>기존 자재 데이터를 불러오는 중...</p>
+                                        </div>
+                                    </div>
+                                </c:when>
                                     <c:otherwise>
-                                        <!-- 등록 모드: 빈 자재 행 -->
-                                        <tr class="material-row">
-                                            <td>
-                                                <select name="materialCode" required onchange="updateMaterialInfo(this)">
-                                                    <option value="">자재를 선택하세요</option>
-                                                    <c:forEach var="material" items="${allMaterials}">
-                                                        <option value="${material.materialCode}">${material.materialCode} - ${material.materialName}</option>
-                                                    </c:forEach>
-                                                </select>
-                                            </td>
-                                            <td><input type="text" readonly></td>
-                                            <td><input type="number" name="quantity" step="0.1" min="0.1" required></td>
-                                            <td><input type="text" readonly></td>
-                                            <td><input type="text" name="remark" placeholder="비고"></td>
-                                            <td><button type="button" class="remove-material-btn" onclick="removeMaterialRow(this)">삭제</button></td>
-                                        </tr>
+                                    <!-- 등록 모드: 기본 메시지 -->
+                                    <p>제품을 선택하면 자재 사용량을 설정할 수 있습니다.</p>
                                     </c:otherwise>
                                 </c:choose>
-                            </tbody>
-                        </table>
+                        </div>
                     </div>
 
                     <!-- 버튼 영역 -->
@@ -175,6 +188,9 @@
     </div>
 
     <script>
+        // 모드 확인
+        const isUpdateMode = ${mode == 'update'};
+        
         // 서버에서 전달받은 자재 데이터 사용
         const materialData = {
             <c:forEach var="material" items="${allMaterials}" varStatus="status">
@@ -184,96 +200,167 @@
             }<c:if test="${!status.last}">,</c:if>
             </c:forEach>
         };
+        
+        // 기본 정보 업데이트 함수
+        function updateBasicInfo() {
+            const standardCode = document.getElementById('standardCode');
+            const bomType = document.getElementById('bomType');
+            
+            if (standardCode && standardCode.value) {
+                const selectedOption = standardCode.options[standardCode.selectedIndex];
+                const productName = selectedOption.text.split(' - ')[1] || '선택 필요';
+                document.querySelector('.info-card .info-item:nth-child(3) .info-value').textContent = productName;
+                document.querySelector('.info-card .info-item:nth-child(2) .info-value').textContent = standardCode.value;
+            }
+            
+            if (bomType && bomType.value) {
+                document.querySelector('.info-card .info-item:nth-child(4) .info-value').textContent = bomType.value;
+            }
+            
+            // 자재 미리보기 업데이트
+            updateMaterialsPreview();
+            
+            // 수정 모드에서도 자재 섹션 업데이트
+            if (isUpdateMode) {
+                const detail = document.getElementById('materialsDetail');
+                if (detail && standardCode && standardCode.value && bomType && bomType.value) {
+                    // 기본 자재 데이터로 초기화
+                    generateDefaultMaterials();
+                }
+            }
+        }
+        
+        // 자재 미리보기 업데이트
+        function updateMaterialsPreview() {
+            const preview = document.getElementById('materialsPreview');
+            const standardCode = document.getElementById('standardCode');
+            const bomType = document.getElementById('bomType');
+            
+            if (standardCode && standardCode.value && bomType && bomType.value) {
+                const materials = getDefaultMaterials(standardCode.value, bomType.value);
+                preview.innerHTML = materials;
+            } else {
+                preview.innerHTML = '<p>제품을 선택하면 자재 사용량이 표시됩니다.</p>';
+            }
+        }
+        
+        // 기본 자재 데이터 반환
+        function getDefaultMaterials(standardCode, bomType) {
+            if (bomType === '원자재') {
+                return '<div class="material-preview">' +
+                    '<h4>원자재 BOM</h4>' +
+                    '<ul>' +
+                        '<li>신선 오이 - 2kg</li>' +
+                        '<li>가성소다 - 200g</li>' +
+                        '<li>팜 오일 - 500ml</li>' +
+                        '<li>올리브 오일 - 300ml</li>' +
+                    '</ul>' +
+                '</div>';
+            } else if (bomType === '반제품') {
+                return '<div class="material-preview">' +
+                    '<h4>반제품 BOM</h4>' +
+                    '<ul>' +
+                        '<li>신선 오이 - 2kg</li>' +
+                        '<li>가성소다 - 200g</li>' +
+                        '<li>팜 오일 - 500ml</li>' +
+                        '<li>올리브 오일 - 300ml</li>' +
+                        '<li>살리실산 - 50g</li>' +
+                        '<li>과일산 - 40g</li>' +
+                    '</ul>' +
+                '</div>';
+            } else if (bomType === '완제품') {
+                return '<div class="material-preview">' +
+                    '<h4>완제품 BOM</h4>' +
+                    '<ul>' +
+                        '<li>신선 오이 - 2kg</li>' +
+                        '<li>가성소다 - 200g</li>' +
+                        '<li>팜 오일 - 500ml</li>' +
+                        '<li>올리브 오일 - 300ml</li>' +
+                        '<li>살리실산 - 50g</li>' +
+                        '<li>과일산 - 40g</li>' +
+                        '<li>아연 PCA - 60g</li>' +
+                        '<li>티트리 오일 - 30ml</li>' +
+                    '</ul>' +
+                '</div>';
+            }
+            return '<p>제품을 선택하면 자재 사용량이 표시됩니다.</p>';
+        }
 
         // 자재 행 추가
         function addMaterialRow() {
-            const tbody = document.getElementById('materialsTableBody');
-            const newRow = document.createElement('tr');
-            newRow.className = 'material-row';
+            const detail = document.getElementById('materialsDetail');
+            if (!detail) return;
             
-            // 첫 번째 td: 자재코드 select
-            const td1 = document.createElement('td');
-            const select = document.createElement('select');
-            select.name = 'materialCode';
-            select.required = true;
-            select.onchange = function() { updateMaterialInfo(this); };
-            
-            // 기본 옵션 추가
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = '자재를 선택하세요';
-            select.appendChild(defaultOption);
-            
-            // materialData에서 자재 옵션들 추가
+            // 수정 모드에서는 기존 자재 섹션에 새 자재 추가
+            if (isUpdateMode) {
+                const updateDiv = document.getElementById('updateMaterials');
+                if (updateDiv) {
+                    // 기존 자재 섹션이 없다면 생성
+                    if (!updateDiv.querySelector('.existing-materials')) {
+                        updateDiv.innerHTML = '<div class="existing-materials"><h4>현재 등록된 자재 사용량</h4></div>';
+                    }
+                    
+                    // 새 자재 카드 추가
+                    const newMaterialCard = document.createElement('div');
+                    newMaterialCard.className = 'material-card new-material';
+                    newMaterialCard.innerHTML = generateMaterialCard();
+                    
+                    updateDiv.appendChild(newMaterialCard);
+                }
+            } else {
+                // 등록 모드에서는 기존 방식대로 추가
+                const materialCard = document.createElement('div');
+                materialCard.className = 'material-card';
+                materialCard.innerHTML = generateMaterialCard();
+                
+                detail.appendChild(materialCard);
+            }
+        }
+        
+        // 자재 카드 생성
+        function generateMaterialCard() {
+            let materialOptions = '';
             for (const code in materialData) {
                 if (materialData.hasOwnProperty(code)) {
-                    const data = materialData[code];
-                    const option = document.createElement('option');
-                    option.value = code;
-                    option.textContent = code + ' - ' + data.name;
-                    select.appendChild(option);
+                    materialOptions += '<option value="' + code + '">' + code + ' - ' + materialData[code].name + '</option>';
                 }
             }
             
-            td1.appendChild(select);
-            newRow.appendChild(td1);
-            
-            // 두 번째 td: 자재명 input
-            const td2 = document.createElement('td');
-            const nameInput = document.createElement('input');
-            nameInput.type = 'text';
-            nameInput.readOnly = true;
-            td2.appendChild(nameInput);
-            newRow.appendChild(td2);
-            
-            // 세 번째 td: 필요수량 input
-            const td3 = document.createElement('td');
-            const quantityInput = document.createElement('input');
-            quantityInput.type = 'number';
-            quantityInput.name = 'quantity';
-            quantityInput.step = '0.1';
-            quantityInput.min = '0.1';
-            quantityInput.required = true;
-            td3.appendChild(quantityInput);
-            newRow.appendChild(td3);
-            
-            // 네 번째 td: 단위 input
-            const td4 = document.createElement('td');
-            const unitInput = document.createElement('input');
-            unitInput.type = 'text';
-            unitInput.readOnly = true;
-            td4.appendChild(unitInput);
-            newRow.appendChild(td4);
-            
-            // 다섯 번째 td: 비고 input
-            const td5 = document.createElement('td');
-            const remarkInput = document.createElement('input');
-            remarkInput.type = 'text';
-            remarkInput.name = 'remark';
-            remarkInput.placeholder = '비고';
-            td5.appendChild(remarkInput);
-            newRow.appendChild(td5);
-            
-            // 여섯 번째 td: 삭제 버튼
-            const td6 = document.createElement('td');
-            const deleteBtn = document.createElement('button');
-            deleteBtn.type = 'button';
-            deleteBtn.className = 'remove-material-btn';
-            deleteBtn.textContent = '삭제';
-            deleteBtn.onclick = function() { removeMaterialRow(this); };
-            td6.appendChild(deleteBtn);
-            newRow.appendChild(td6);
-            
-            tbody.appendChild(newRow);
+            return '<div class="material-header">' +
+                '<div class="material-info">' +
+                    '<select name="materialCode" required onchange="updateMaterialInfo(this)">' +
+                        '<option value="">자재를 선택하세요</option>' +
+                        materialOptions +
+                    '</select>' +
+                    '<input type="text" name="materialName" readonly placeholder="자재명">' +
+                '</div>' +
+                '<button type="button" class="btn-remove-material" onclick="removeMaterialCard(this)">×</button>' +
+            '</div>' +
+            '<div class="material-content">' +
+                '<div class="material-details">' +
+                    '<div class="detail-item">' +
+                        '<label>필요수량</label>' +
+                        '<input type="number" name="quantity" step="0.1" min="0.1" required placeholder="수량">' +
+                    '</div>' +
+                    '<div class="detail-item">' +
+                        '<label>단위</label>' +
+                        '<input type="text" name="unit" readonly placeholder="단위">' +
+                    '</div>' +
+                    '<div class="detail-item">' +
+                        '<label>비고</label>' +
+                        '<input type="text" name="remark" placeholder="비고">' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
         }
 
-        // 자재 행 삭제
-        function removeMaterialRow(button) {
-            const tbody = document.getElementById('materialsTableBody');
-            const rows = tbody.querySelectorAll('.material-row');
+        // 자재 카드 삭제
+        function removeMaterialCard(button) {
+            const detail = document.getElementById('materialsDetail');
+            const cards = detail.querySelectorAll('.material-card');
             
-            if (rows.length > 1) {
-                button.closest('tr').remove();
+            if (cards.length > 1) {
+                button.closest('.material-card').remove();
             } else {
                 alert('최소 1개의 자재는 필요합니다.');
             }
@@ -281,10 +368,10 @@
 
         // 자재 정보 업데이트
         function updateMaterialInfo(selectElement) {
-            const row = selectElement.closest('tr');
+            const card = selectElement.closest('.material-card');
             const materialCode = selectElement.value;
-            const nameInput = row.querySelector('td:nth-child(2) input');
-            const unitInput = row.querySelector('td:nth-child(4) input');
+            const nameInput = card.querySelector('input[name="materialName"]');
+            const unitInput = card.querySelector('input[name="unit"]');
             
             if (materialCode && materialData[materialCode]) {
                 nameInput.value = materialData[materialCode].name;
@@ -295,15 +382,203 @@
             }
         }
 
-        // 기존 자재 선택 이벤트 리스너 추가
+        // 자재 초기화
+        function resetMaterials() {
+            const detail = document.getElementById('materialsDetail');
+            const bomType = document.getElementById('bomType');
+            
+            if (bomType && bomType.value) {
+                detail.innerHTML = generateDefaultMaterials(bomType.value);
+            } else {
+                detail.innerHTML = '<p>BOM 유형을 선택하면 기본 자재가 표시됩니다.</p>';
+            }
+            
+            // 수정 모드에서도 미리보기 업데이트
+            updateMaterialsPreview();
+        }
+        
+        // 기본 자재 생성
+        function generateDefaultMaterials(bomType) {
+            let materials = '';
+            
+            if (bomType === '원자재') {
+                const defaultMaterials = [
+                    { code: 'RA001', name: '신선 오이', unit: 'kg', quantity: 2 },
+                    { code: 'RA002', name: '가성소다', unit: 'g', quantity: 200 },
+                    { code: 'RA003', name: '팜 오일', unit: 'ml', quantity: 500 },
+                    { code: 'RA004', name: '올리브 오일', unit: 'ml', quantity: 300 }
+                ];
+                
+                materials = defaultMaterials.map(mat => generateMaterialCardWithData(mat)).join('');
+            } else if (bomType === '반제품') {
+                const defaultMaterials = [
+                    { code: 'RA001', name: '신선 오이', unit: 'kg', quantity: 2 },
+                    { code: 'RA002', name: '가성소다', unit: 'g', quantity: 200 },
+                    { code: 'RA003', name: '팜 오일', unit: 'ml', quantity: 500 },
+                    { code: 'RA004', name: '올리브 오일', unit: 'ml', quantity: 300 },
+                    { code: 'RA005', name: '살리실산', unit: 'g', quantity: 50 },
+                    { code: 'RA006', name: '과일산', unit: 'g', quantity: 40 }
+                ];
+                
+                materials = defaultMaterials.map(mat => generateMaterialCardWithData(mat)).join('');
+            } else if (bomType === '완제품') {
+                const defaultMaterials = [
+                    { code: 'RA001', name: '신선 오이', unit: 'kg', quantity: 2 },
+                    { code: 'RA002', name: '가성소다', unit: 'g', quantity: 200 },
+                    { code: 'RA003', name: '팜 오일', unit: 'ml', quantity: 500 },
+                    { code: 'RA004', name: '올리브 오일', unit: 'ml', quantity: 300 },
+                    { code: 'RA005', name: '살리실산', unit: 'g', quantity: 50 },
+                    { code: 'RA006', name: '과일산', unit: 'g', quantity: 40 },
+                    { code: 'RA007', name: '아연 PCA', unit: 'g', quantity: 60 },
+                    { code: 'RA008', name: '티트리 오일', unit: 'ml', quantity: 30 }
+                ];
+                
+                materials = defaultMaterials.map(mat => generateMaterialCardWithData(mat)).join('');
+            }
+            
+            return materials;
+        }
+        
+        // 데이터가 포함된 자재 카드 생성
+        function generateMaterialCardWithData(material) {
+            let materialOptions = '';
+            for (const code in materialData) {
+                if (materialData.hasOwnProperty(code)) {
+                    const selected = code === material.code ? ' selected' : '';
+                    materialOptions += '<option value="' + code + '"' + selected + '>' + code + ' - ' + materialData[code].name + '</option>';
+                }
+            }
+            
+            return '<div class="material-card">' +
+                '<div class="material-header">' +
+                    '<div class="material-info">' +
+                        '<select name="materialCode" required onchange="updateMaterialInfo(this)">' +
+                            '<option value="">자재를 선택하세요</option>' +
+                            materialOptions +
+                        '</select>' +
+                        '<input type="text" name="materialName" readonly value="' + material.name + '">' +
+                    '</div>' +
+                    '<button type="button" class="btn-remove-material" onclick="removeMaterialCard(this)">×</button>' +
+                '</div>' +
+                '<div class="material-content">' +
+                    '<div class="material-details">' +
+                        '<div class="detail-item">' +
+                            '<label>필요수량</label>' +
+                            '<input type="number" name="quantity" step="0.1" min="0.1" required value="' + material.quantity + '">' +
+                        '</div>' +
+                        '<div class="detail-item">' +
+                            '<label>단위</label>' +
+                            '<input type="text" name="unit" readonly value="' + material.unit + '">' +
+                        '</div>' +
+                        '<div class="detail-item">' +
+                            '<label>비고</label>' +
+                            '<input type="text" name="remark" placeholder="비고" value="' + (material.remark || '') + '">' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        }
+
+        // 이벤트 리스너 추가
         document.addEventListener('DOMContentLoaded', function() {
-            const materialSelects = document.querySelectorAll('select[name="materialCode"]');
-            materialSelects.forEach(select => {
-                select.addEventListener('change', function() {
-                    updateMaterialInfo(this);
+            // 제품 선택 이벤트
+            const standardCodeSelect = document.getElementById('standardCode');
+            if (standardCodeSelect) {
+                standardCodeSelect.addEventListener('change', updateBasicInfo);
+            }
+            
+            // BOM 유형 선택 이벤트
+            const bomTypeSelect = document.getElementById('bomType');
+            if (bomTypeSelect) {
+                bomTypeSelect.addEventListener('change', function() {
+                    updateBasicInfo();
+                    resetMaterials();
                 });
-            });
+            }
+            
+            // 수정 모드 초기화
+            if (isUpdateMode) {
+                // 수정 모드에서는 기존 자재 데이터를 표시
+                generateUpdateMaterials();
+            }
         });
+        
+        // 수정 모드에서 기존 자재 데이터 생성
+        function generateUpdateMaterials() {
+            const detail = document.getElementById('materialsDetail');
+            if (!detail) return;
+            
+            // 수정 모드에서는 기존 자재 데이터를 표시
+            const updateDiv = document.getElementById('updateMaterials');
+            if (updateDiv) {
+                // 기존 자재 데이터가 있다면 표시, 없다면 안내 메시지
+                const existingMaterials = getExistingMaterials();
+                if (existingMaterials.length > 0) {
+                    updateDiv.innerHTML = generateExistingMaterialsHTML(existingMaterials);
+                } else {
+                    updateDiv.innerHTML = '<p>현재 등록된 자재가 없습니다. "자재 추가" 버튼을 클릭하여 자재를 추가하세요.</p>';
+                }
+            }
+        }
+        
+        // 기존 자재 데이터 가져오기 (실제로는 서버에서 받아와야 함)
+        function getExistingMaterials() {
+            // 실제 구현에서는 서버에서 기존 자재 데이터를 받아와야 함
+            // 현재는 예시 데이터를 반환
+            return [
+                { code: 'RA001', name: '신선 오이', unit: 'kg', quantity: 2, remark: '신선한 오이' },
+                { code: 'RA002', name: '가성소다', unit: 'g', quantity: 200, remark: '화학 원료' },
+                { code: 'RA003', name: '팜 오일', unit: 'ml', quantity: 500, remark: '식용유' }
+            ];
+        }
+        
+        // 기존 자재 HTML 생성
+        function generateExistingMaterialsHTML(materials) {
+            let html = '<div class="existing-materials">';
+            html += '<h4>현재 등록된 자재 사용량</h4>';
+            
+            materials.forEach((material, index) => {
+                html += '<div class="material-card existing-material">';
+                html += '<div class="material-header">';
+                html += '<div class="material-info">';
+                html += '<select name="materialCode" required onchange="updateMaterialInfo(this)">';
+                html += '<option value="">자재를 선택하세요</option>';
+                
+                // 자재 옵션 생성
+                for (const code in materialData) {
+                    if (materialData.hasOwnProperty(code)) {
+                        const selected = material.code === code ? 'selected' : '';
+                        html += '<option value="' + code + '" ' + selected + '>' + code + ' - ' + materialData[code].name + '</option>';
+                    }
+                }
+                
+                html += '</select>';
+                html += '<input type="text" name="materialName" readonly value="' + material.name + '">';
+                html += '</div>';
+                html += '<button type="button" class="btn-remove-material" onclick="removeMaterialCard(this)">×</button>';
+                html += '</div>';
+                html += '<div class="material-content">';
+                html += '<div class="material-details">';
+                html += '<div class="detail-item">';
+                html += '<label>필요수량</label>';
+                html += '<input type="number" name="quantity" step="0.1" min="0.1" required value="' + material.quantity + '">';
+                html += '</div>';
+                html += '<div class="detail-item">';
+                html += '<label>단위</label>';
+                html += '<input type="text" name="unit" readonly value="' + material.unit + '">';
+                html += '</div>';
+                html += '<div class="detail-item">';
+                html += '<label>비고</label>';
+                html += '<input type="text" name="remark" placeholder="비고" value="' + (material.remark || '') + '">';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+            });
+            
+            html += '</div>';
+            return html;
+        }
 
         // 폼 유효성 검사
         document.getElementById('bomForm').addEventListener('submit', function(e) {
