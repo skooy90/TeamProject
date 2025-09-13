@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%-- Add JSTL core tag library --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <!DOCTYPE html>
 <html>
@@ -100,6 +101,31 @@ tr:nth-child(even) {
 	color: #6c757d;
 	padding: 20px;
 }
+
+.pg {
+	padding: 6px 10px;
+	border: 1px solid #d0d7de;
+	border-radius: 6px;
+	text-decoration: none;
+	color: #111;
+	background: #fff;
+	font-size: 14px;
+}
+
+.pg.active {
+	background: #1677ff;
+	color: #fff;
+	border-color: #1677ff;
+}
+
+.pg.disabled {
+	pointer-events: none;
+	opacity: .5;
+}
+
+.pg:hover {
+	background: #f6f8fa;
+}
 </style>
 </head>
 <body>
@@ -161,9 +187,30 @@ tr:nth-child(even) {
 						</c:choose>
 					</tbody>
 				</table>
+				    <div class="container">
+      <!-- 표/내용 -->
+      ...
+      <!-- ✅ 페이지네이션을 컨텐트 안쪽으로 이동 -->
+      <div class="pager" style="display:flex; justify-content:center; gap:6px; margin:16px 0;">
+        <c:set var="ctx" value="${pageContext.request.contextPath}" />
+        <c:set var="qparam">
+          <c:if test="${not empty q}">&amp;q=${fn:escapeXml(q)}</c:if>
+        </c:set>
+
+        <a href="${ctx}/standardList?page=1${qparam}" class="pg ${page==1?'disabled':''}">« 처음</a>
+        <a href="${ctx}/standardList?page=${page-1}${qparam}" class="pg ${page==1?'disabled':''}">‹ 이전</a>
+
+        <c:forEach var="p" begin="${startPage}" end="${endPage}">
+          <a href="${ctx}/standardList?page=${p}${qparam}" class="pg ${p==page?'active':''}">${p}</a>
+        </c:forEach>
+
+        <a href="${ctx}/standardList?page=${page+1}${qparam}" class="pg ${page==totalPages?'disabled':''}">다음 ›</a>
+        <a href="${ctx}/standardList?page=${totalPages}${qparam}" class="pg ${page==totalPages?'disabled':''}">마지막 »</a>
+      </div>
 			</div>
 		</div>
 	</div>
+</div>
 </body>
 
 <script>

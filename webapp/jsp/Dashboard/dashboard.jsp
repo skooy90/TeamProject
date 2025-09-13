@@ -2,6 +2,8 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -13,7 +15,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
 .container {
 	max-width: 1200px; /* 가운데 라인 고정 */
 	margin: 24px auto; /* 수평 중앙 정렬 */
@@ -24,7 +25,6 @@
 	text-align: center;
 	margin: 8px 0 56px;
 }
-
 
 .grid {
 	display: grid;
@@ -106,9 +106,29 @@ canvas {
 								건
 							</div>
 						</div>
-						<div class="card">
-							<h3>작업량 vs 작업 완료량</h3>
-							<canvas id="workQvc"></canvas>
+						<div class="card"
+							style="padding: 16px; display: flex; gap: 16px; align-items: center;">
+							<div style="width: 220px; height: 220px;">
+								<canvas id="workProgressChart"></canvas>
+							</div>
+
+							<div style="display: flex; flex-direction: column; gap: 6px;">
+								<div style="font-weight: 700; font-size: 18px;">작업 진행률</div>
+								<div style="font-size: 32px; font-weight: 800;">
+									<fmt:formatNumber value="${workRate}" type="number"
+										maxFractionDigits="1" />
+									%
+								</div>
+								<div style="color: #64748b;">
+									총 작업량: <b>${workTotal}</b>
+								</div>
+								<div style="color: #64748b;">
+									완료량: <b>${workDone}</b>
+								</div>
+								<div style="color: #64748b;">
+									잔여량: <b>${workRemain}</b>
+								</div>
+							</div>
 						</div>
 					</div>
 
@@ -135,7 +155,7 @@ canvas {
 			</div>
 		</div>
 	</div>
-	</div>
+
 
 	<script>
   // ----- 생산: Target vs Completed -----
@@ -219,6 +239,63 @@ canvas {
     data:{labels:rLabels,datasets:[{label:'불량률(%)',data:rVals}]},
     options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true}}}
   });
+  
+  (function () {
+	    const total  = ${workTotal};
+	    const done   = ${workDone};
+	    const remain = ${workRemain};
+	    const rate   = ${workRate};
+
+	    const centerText = {
+	      id: 'centerText',
+	      afterDraw(chart) {
+	        const {ctx} = chart;
+	        const p = chart.getDatasetMeta(0).data[0];
+	        if (!p) return;
+	        ctx.save();
+	        ctx.font = '700 28px sans-serif';
+	        ctx.fillStyle = '#111';
+	        ctx.textAlign = 'center';
+	        ctx.textBaseline = 'middle';
+	        ctx.fillText((rate || 0).toFixed(1) + '%', p.x, p.y);
+	        ctx.restore();
+	      }
+	    };
+
+	    const canvas = document.getElementById('workProgressChart');
+	    const c2d = canvas.getContext('2d');
+
+	    new Chart(c2d, {
+	      type: 'doughnut',
+	      data: {
+	        labels: ['완료', '잔여'],
+	        datasets: [{
+	          data: [done, Math.max(0, total - done)],
+	          backgroundColor: ['rgba(75, 192, 192, 0.9)', 'rgba(229, 231, 235, 0.9)'],
+	          borderColor: ['rgba(75, 192, 192, 1)', 'rgba(229, 231, 235, 1)'],
+	          borderWidth: 1,
+	          cutout: '68%'
+	        }]
+	      },
+	      options: {
+	        responsive: true,
+	        maintainAspectRatio: false,
+	        plugins: {
+	          legend: { position: 'bottom' },
+	          tooltip: {
+	            callbacks: {
+	              // ⬇⬇ 여기만 변경 ⬇⬇
+	              label: function (c) {
+	                var pct = total ? Math.round(c.parsed * 100 / total) : 0;
+	                return c.label + ': ' + c.parsed + ' (' + pct + '%)';
+	              }
+	            }
+	          }
+	        }
+	      },
+	      plugins: [centerText]
+	    });
+	  })();
 </script>
 </body>
 </html>

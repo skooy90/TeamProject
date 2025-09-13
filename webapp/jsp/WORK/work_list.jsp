@@ -290,10 +290,10 @@ th:nth-child(13), td:nth-child(13) {
 				</div>
 
 				<!-- 차트 -->
-				<div class="charts">
-					<div class="chart-card">
-						<canvas id="amountChart"></canvas>
-					</div>
+<!-- 				<div class="charts"> -->
+<!-- 					<div class="chart-card"> -->
+<%-- 						<canvas id="amountChart"></canvas> --%>
+<!-- 					</div> -->
 <!-- 					<div class="chart-card"> -->
 <%-- 						<canvas id="statusChart"></canvas> --%>
 <!-- 					</div> -->
