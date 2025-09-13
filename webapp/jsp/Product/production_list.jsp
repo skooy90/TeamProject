@@ -191,15 +191,13 @@ th:nth-child(11), td:nth-child(11) {
 
 				<!-- 검색 & 등록 -->
 				<div class="controls">
-					<form class="search-form"
-						action="${pageContext.request.contextPath}/productionList"
+					<form class="search-form" action="${ctx}/productionList"
 						method="get">
-						<input class="search-input" name="q"
-							placeholder="생산번호·제품코드·제품명 검색 (두 글자 이상)" value="${q}">
+						<input type="text" class="search-input" name="q"
+							placeholder="생산번호, 제품코드, 제품명 검색">
 						<button type="submit" class="btn btn-primary">검색</button>
 					</form>
-					<a href="${pageContext.request.contextPath}/production/form"
-						class="btn btn-success">생산 등록</a>
+					<a href="${ctx}/production/form" class="btn btn-success">생산 등록</a>
 				</div>
 
 				<!-- 테이블 -->
@@ -211,47 +209,29 @@ th:nth-child(11), td:nth-child(11) {
 								<th>제품코드</th>
 								<th>제품명</th>
 								<th>생산 시작일</th>
-								<th>생산 종료일</th>
 								<th>생산 목표량</th>
 								<th>생산 완료량</th>
 								<th>담당자</th>
-								<th>생성일</th>
-								<th>수정일</th>
 								<th>관리</th>
 							</tr>
 						</thead>
 						<tbody>
-							<c:choose>
-								<c:when test="${empty productionList}">
-									<tr>
-										<td colspan="11" class="no-data">등록된 생산 정보가 없습니다.</td>
-									</tr>
-								</c:when>
-								<c:otherwise>
-									<c:forEach var="p" items="${productionList}">
-										<tr>
-											<td>${p.productionNo}</td>
-											<td>${p.standardCode}</td>
-											<td>${p.stName}</td>
-											<td><fmt:formatDate value="${p.prStart}"
-													pattern="yyyy-MM-dd" /></td>
-											<td><fmt:formatDate value="${p.prEnd}"
-													pattern="yyyy-MM-dd" /></td>
-											<td>${p.prTarget}</td>
-											<td>${p.prCompleted}</td>
-											<td>${p.employeeNo}</td>
-											<td><fmt:formatDate value="${p.createDate}"
-													pattern="yyyy-MM-dd" /></td>
-											<td><fmt:formatDate value="${p.updateDate}"
-													pattern="yyyy-MM-dd" /></td>
-											<td class="action-links"><a
-												href="${ctx}/production/form?no=${p.productionNo}">수정</a> <a
-												href="${ctx}/production/delete?no=${p.productionNo}"
-												onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a></td>
-										</tr>
-									</c:forEach>
-								</c:otherwise>
-							</c:choose>
+							<c:forEach var="item" items="${productionList}">
+								<tr>
+									<td>${item.productionNo}</td>
+									<td>${item.standardCode}</td>
+									<td><a href="#" class="js-prod-detail"
+										data-no="${item.productionNo}"> ${item.stName} </a></td>
+									<td>${item.prStart}</td>
+									<td>${item.prTarget}</td>
+									<td>${item.prCompleted}</td>
+									<td>${item.employeeNo}</td>
+									<td class="action-links"><a
+										href="${ctx}/production/update?no=${item.productionNo}">수정</a>
+										<a href="${ctx}/production/delete?no=${item.productionNo}">삭제</a>
+									</td>
+								</tr>
+							</c:forEach>
 						</tbody>
 					</table>
 				</div>
@@ -320,8 +300,44 @@ th:nth-child(11), td:nth-child(11) {
       }
     });
 
+    (function(){
+    	  const dlg   = document.getElementById('prodDlg');
+    	  const frame = document.getElementById('prodFrame');
+    	  const close = document.getElementById('dlgClose');
+    	  const ctx   = '${pageContext.request.contextPath}'; // JSP에서 컨텍스트 경로
+
+    	  document.addEventListener('click', (e)=>{
+    	    const a = e.target.closest('.js-prod-detail');
+    	    if(!a) return;
+    	    e.preventDefault();
+    	    frame.src = ctx + '/production/detail?no=' + encodeURIComponent(a.dataset.no);
+    	    dlg.showModal();
+    	  });
+
+    	  close.addEventListener('click', ()=> dlg.close());
+    	})();
+    
   </script>
 	<%-- fn 함수 사용 시 아래 태그라이브러리 추가 --%>
 	<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+	<style>
+  dialog.prod-dlg { border:0; padding:0; border-radius:12px; width:min(900px, 92vw); }
+  .dlg-head { display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-bottom:1px solid #eee; font-weight:700;}
+  .dlg-body { width:min(900px, 92vw); height:min(70vh, 620px); }
+  #prodFrame { width:100%; height:100%; border:0; }
+  .dlg-close { background:#fff; border:1px solid #ddd; border-radius:8px; padding:6px 10px; cursor:pointer; }
+  dialog::backdrop { background:rgba(0,0,0,.35); }
+</style>
+
+<dialog id="prodDlg" class="prod-dlg">
+  <div class="dlg-head">
+    <span>생산 상세</span>
+    <button type="button" id="dlgClose" class="dlg-close">닫기</button>
+  </div>
+  <div class="dlg-body">
+    <iframe id="prodFrame" src=""></iframe>
+  </div>
+</dialog>
+	
 </body>
 </html>

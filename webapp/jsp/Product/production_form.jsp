@@ -97,6 +97,7 @@
 					<div class="form-grid">
 
 						<!-- 수정 모드에서만 노출/전송 -->
+						<!-- 수정 모드에서만 노출/전송 -->
 						<c:if test="${not empty prod}">
 							<label>생산번호</label>
 							<input type="text" value="${prod.productionNo}" readonly>
@@ -104,27 +105,41 @@
 								value="${prod.productionNo}">
 						</c:if>
 
-						<label for="standardCode">제품코드</label> <select id="standardCode"
-							name="standardCode" required class="form-control">
-							<option value="" disabled selected>선택하세요</option>
-							<optgroup label="SEMI">
-								<c:forEach var="s" items="${standards}">
-									<c:if test="${s.stType == 'SEMI'}">
-										<option value="${s.standardCode}">${s.standardCode} —
-											${s.stName}</option>
-									</c:if>
-								</c:forEach>
-							</optgroup>
+						<c:choose>
+							<%-- 등록 모드 --%>
+							<c:when test="${empty prod}">
+								<label for="standardCode">제품코드</label>
+								<select id="standardCode" name="standardCode" required>
+									<option value="" disabled selected>선택하세요</option>
 
-							<optgroup label="FINISH">
-								<c:forEach var="s" items="${standards}">
-									<c:if test="${s.stType == 'FINISH'}">
-										<option value="${s.standardCode}">${s.standardCode} —
-											${s.stName}</option>
-									</c:if>
-								</c:forEach>
-							</optgroup>
-						</select> </select> <label for="employeeNo">담당자 사번</label> <input id="employeeNo"
+									<optgroup label="SEMI">
+										<c:forEach var="s" items="${standards}">
+											<c:if test="${s.stType eq 'SEMI'}">
+												<option value="${s.standardCode}">
+													${s.standardCode} — ${s.stName}</option>
+											</c:if>
+										</c:forEach>
+									</optgroup>
+
+									<optgroup label="FINISH">
+										<c:forEach var="s" items="${standards}">
+											<c:if test="${s.stType eq 'FINISH'}">
+												<option value="${s.standardCode}">
+													${s.standardCode} — ${s.stName}</option>
+											</c:if>
+										</c:forEach>
+									</optgroup>
+								</select>
+							</c:when>
+
+							<%-- 수정 모드: 화면에는 안 보이게, 값만 유지 --%>
+							<c:otherwise>
+								<input type="hidden" name="standardCode"
+									value="${prod.standardCode}">
+							</c:otherwise>
+						</c:choose>
+
+						<label for="employeeNo">담당자 사번</label> <input id="employeeNo"
 							name="employeeNo" type="text"
 							value="${empty prod ? '' : prod.employeeNo}" required
 							placeholder="예) K0001"> <label for="prStart">생산
@@ -135,10 +150,7 @@
 							value="<fmt:formatDate value='${prod.prEnd}' pattern='yyyy-MM-dd'/>"
 							required> <label for="prTarget">생산 목표량</label> <input
 							id="prTarget" name="prTarget" type="number" min="0" step="1"
-							value="${empty prod ? 0 : prod.prTarget}" required> <label
-							for="prCompleted">생산 완료량</label> <input id="prCompleted"
-							name="prCompleted" type="number" min="0" step="1"
-							value="${empty prod ? 0 : prod.prCompleted}" required>
+							value="${empty prod ? 0 : prod.prTarget}" required>
 
 					</div>
 
