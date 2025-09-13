@@ -194,4 +194,75 @@ public class StandardDAO {
 		}
 		return list;
 	}
+	
+	public int count(String q) {
+	    String base = "SELECT COUNT(*) FROM STANDARD";
+	    String sql  = base;
+	    boolean hasQ = (q != null && q.trim().length() >= 2);
+
+	    if (hasQ) {
+	        sql += " WHERE UPPER(standard_code) LIKE UPPER(?) OR UPPER(st_name) LIKE UPPER(?)";
+	    }
+
+	    try (Connection c = DBManager.getConnection();
+	         PreparedStatement ps = c.prepareStatement(sql)) {
+
+	        if (hasQ) {
+	            String like = q.trim() + "%"; // 접두 검색
+	            ps.setString(1, like);
+	            ps.setString(2, like);
+	        }
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) return rs.getInt(1);
+	        }
+	    } catch (Exception e) { e.printStackTrace(); }
+	    return 0;
+	}
+
+	// 페이지 조회 (ROW_NUMBER 사용)
+	public List<StandardDTO> findPage(String q, int page, int size) {
+	    int start = (page - 1) * size + 1;
+	    int end   = page * size;
+
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("SELECT * FROM (")
+	      .append("  SELECT s.*, ROW_NUMBER() OVER(ORDER BY s.UPDATE_DATE DESC) rn ")
+	      .append("  FROM STANDARD s ");
+
+	    boolean hasQ = (q != null && q.trim().length() >= 2);
+	    if (hasQ) {
+	        sb.append(" WHERE UPPER(s.standard_code) LIKE UPPER(?) OR UPPER(s.st_name) LIKE UPPER(?) ");
+	    }
+	    sb.append(") WHERE rn BETWEEN ? AND ?");
+
+	    List<StandardDTO> list = new ArrayList<>();
+	    try (Connection c = DBManager.getConnection();
+	         PreparedStatement ps = c.prepareStatement(sb.toString())) {
+
+	        int i = 1;
+	        if (hasQ) {
+	            String like = q.trim() + "%";
+	            ps.setString(i++, like);
+	            ps.setString(i++, like);
+	        }
+	        ps.setInt(i++, start);
+	        ps.setInt(i++, end);
+
+	        try (ResultSet rs = ps.executeQuery()) {
+	            while (rs.next()) {
+	                StandardDTO d = new StandardDTO();
+	                d.setStandardCode(rs.getString("standard_code"));
+	                d.setStType(rs.getString("st_type"));
+	                d.setStName(rs.getString("st_name"));
+	                d.setStQuantity(rs.getInt("st_quantity"));
+	                d.setStUnit(rs.getString("st_unit"));
+	                d.setCreateDate(rs.getDate("create_date"));
+	                d.setUpdateDate(rs.getDate("update_date"));
+	                list.add(d);
+	            }
+	        }
+	    } catch (Exception e) { e.printStackTrace(); }
+	    return list;
+	}
+	
 }

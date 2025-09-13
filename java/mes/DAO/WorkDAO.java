@@ -109,30 +109,41 @@ public class WorkDAO {
         return insert(d) > 0;
     }
 
-	// 수정
-	public int update(WorkDTO w) {
-		String sql = "UPDATE WORK SET " + "PRODUCTION_NO=?, STANDARD_CODE=?, EMPLOYEE_NO=?, "
-				+ "WO_SCHEDULE=?, WO_QUANTITY=?, WO_STATUS=?, WO_COMPLETED=?, WO_START=?, WO_END=?, UPDATE_DATE=SYSDATE "
-				+ "WHERE WORK_NO=?";
-		try (Connection conn = DBManager.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+	// 수정 EMPLOYEE_NO=?,
+    public int update(WorkDTO d) {
+        String sql =
+            "UPDATE WORK SET " +
+            "  PRODUCTION_NO=?, " +           // 필요 시 유지
+            "  STANDARD_CODE=?, " +
+            // "EMPLOYEE_NO=?, "              // ← 제거(사번은 업데이트 금지)
+            "  WO_SCHEDULE=?, " +
+            "  WO_QUANTITY=?, " +
+            "  WO_STATUS=?, " +
+            "  WO_COMPLETED=?, " +
+            "  WO_START=?, " +
+            "  WO_END=?, " +
+            "  UPDATE_DATE=SYSDATE " +
+            "WHERE WORK_NO=?";
 
-			ps.setString(1, w.getProductionNo());
-			ps.setString(2, w.getStandardCode());
-			ps.setString(3, w.getEmployeeNo());
-			ps.setDate(4, w.getWoSchedule());
-			ps.setInt(5, w.getWoQuantity());
-			ps.setString(6, w.getWoStatus());
-			ps.setInt(7, w.getWoCompleted());
-			ps.setTimestamp(8, w.getWoStart());
-			ps.setTimestamp(9, w.getWoEnd());
-			ps.setString(10, w.getWorkNo());
+        try (Connection c = DBManager.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
-			return ps.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
+            int i=1;
+            ps.setString(i++, d.getProductionNo());
+            ps.setString(i++, d.getStandardCode());
+            ps.setDate  (i++, d.getWoSchedule());
+            ps.setInt   (i++, d.getWoQuantity());
+            ps.setString(i++, d.getWoStatus());
+            ps.setInt   (i++, d.getWoCompleted());
+            ps.setTimestamp(i++, d.getWoStart());
+            ps.setTimestamp(i++, d.getWoEnd());
+            ps.setString(i++, d.getWorkNo());
+            return ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 
 	// 삭제
 	public int delete(String workNo) {
@@ -255,5 +266,47 @@ public class WorkDAO {
 		  Collections.reverse(out);
 		  return out;
 		}
+	
+	public Map<String, Integer> findOverallProgress() {
+	    String sql = "SELECT NVL(SUM(WO_QUANTITY),0) AS TOTAL_QTY, " +
+	                 "       NVL(SUM(WO_COMPLETED),0) AS TOTAL_DONE " +
+	                 "  FROM WORK";
+	    Map<String, Integer> out = new HashMap<>();
+	    try (Connection c = DBManager.getConnection();
+	         PreparedStatement ps = c.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+	        if (rs.next()) {
+	            out.put("total", rs.getInt("TOTAL_QTY"));
+	            out.put("done",  rs.getInt("TOTAL_DONE"));
+	        }
+	    } catch (Exception e) { e.printStackTrace(); }
+	    return out;
+	}
+	
+	   public List<WorkDTO> findForQualityForm() {
+	        List<WorkDTO> list = new ArrayList<>();
+
+	        String sql = "SELECT w.WORK_NO, s.ST_NAME " +
+	                     "FROM WORK w " +
+	                     "JOIN STANDARD s ON w.STANDARD_CODE = s.STANDARD_CODE " +
+	                     "ORDER BY w.WORK_NO DESC";
+
+	        try (
+	            Connection conn = DBManager.getConnection();
+	            PreparedStatement pstmt = conn.prepareStatement(sql);
+	            ResultSet rs = pstmt.executeQuery()
+	        ) {
+	            while (rs.next()) {
+	                WorkDTO dto = new WorkDTO();
+	                dto.setWorkNo(rs.getString("WORK_NO"));
+	                dto.setStName(rs.getString("ST_NAME")); // JSP에서 표시용
+	                list.add(dto);
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        return list;
+	    }
 	
 }

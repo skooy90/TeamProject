@@ -287,6 +287,8 @@ public class ProductionDAO {
 		  return out;
 		}
 
+		
+	
 		public int sumCompletedToday(){
 		  String sql="SELECT NVL(SUM(pr_completed),0) FROM production " +
 		             "WHERE TRUNC(update_date)=TRUNC(SYSDATE)";
@@ -346,8 +348,29 @@ public class ProductionDAO {
 		        } catch (Exception e) { e.printStackTrace(); }
 		        return null;
 		    }
-		    
+
+		    public List<Map<String, Object>> findForWorkFormWithTarget() {
+		        String sql =
+		            "SELECT p.PRODUCTION_NO, p.STANDARD_CODE, s.ST_NAME, p.PR_TARGET " +
+		            "  FROM PRODUCTION p " +
+		            "  JOIN STANDARD s ON s.STANDARD_CODE = p.STANDARD_CODE " +
+		            " ORDER BY p.CREATE_DATE DESC";
+
+		        List<Map<String, Object>> out = new ArrayList<>();
+		        try (Connection c = DBManager.getConnection();
+		             PreparedStatement ps = c.prepareStatement(sql);
+		             ResultSet rs = ps.executeQuery()) {
+		            while (rs.next()) {
+		                Map<String, Object> m = new HashMap<>();
+		                m.put("productionNo", rs.getString("PRODUCTION_NO"));
+		                m.put("standardCode", rs.getString("STANDARD_CODE"));
+		                m.put("stName",       rs.getString("ST_NAME"));
+		                m.put("prTarget",     rs.getInt("PR_TARGET"));
+		                out.add(m);
+		            }
+		        } catch (Exception e) { e.printStackTrace(); }
+		        return out;
+		    }
 			
 			
 }
-
