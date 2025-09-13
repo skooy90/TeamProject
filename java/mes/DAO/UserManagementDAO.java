@@ -1,6 +1,7 @@
 package mes.DAO;
 
 import mes.DTO.UsersDTO;
+import mes.security.PasswordUtil;
 import mes.util.DBManager;
 import java.sql.*;
 import java.util.*;
@@ -178,7 +179,9 @@ public class UserManagementDAO {
             pstmt.setString(1, user.getEmployeeNo());
             pstmt.setString(2, user.getUsName());
             pstmt.setString(3, user.getUsPosition());
-            pstmt.setString(4, user.getUsPassword());
+            // 비밀번호 해시화 적용
+            String hashedPassword = PasswordUtil.hash(user.getUsPassword());
+            pstmt.setString(4, hashedPassword);
             pstmt.setString(5, user.getUsAuthority());
             pstmt.setInt(6, user.getUsPsUpStatus());
             
@@ -221,7 +224,9 @@ public class UserManagementDAO {
         try {
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, employeeNo);  // 비밀번호를 사원번호로 설정
+            // 비밀번호를 사원번호로 해시화하여 설정
+            String hashedPassword = PasswordUtil.hash(employeeNo);
+            pstmt.setString(1, hashedPassword);
             pstmt.setString(2, employeeNo);  // WHERE 조건의 사원번호
             
             int result = pstmt.executeUpdate();
