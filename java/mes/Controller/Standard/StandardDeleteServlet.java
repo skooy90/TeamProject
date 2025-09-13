@@ -10,15 +10,28 @@ import mes.DAO.StandardDAO;
 import java.io.IOException;
 
 //com.mes.Controller.Standard.StandardDeleteServlet
-@WebServlet("/deleteStandard")
+@WebServlet("/standard/delete")
 public class StandardDeleteServlet extends HttpServlet {
- @Override
- protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-         throws IOException {
-     String code = req.getParameter("code");
-     int affected = StandardDAO.getInstance().delete(code); // ← 여기!
+  @Override
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    String code = req.getParameter("code");
+    String ctx  = req.getContextPath();
 
-     // 목록으로 리다이렉트
-     resp.sendRedirect(req.getContextPath() + "/standardList");
- }
+    if (code == null || code.isBlank()) {
+      resp.sendRedirect(ctx + "/standardList?msg=bad_param");
+      return;
+    }
+
+    int affected;
+    try {
+      affected = StandardDAO.getInstance().delete(code);
+    } catch (Exception e) {
+      e.printStackTrace();
+      resp.sendRedirect(ctx + "/standardList?msg=error");
+      return;
+    }
+
+    resp.sendRedirect(ctx + "/standardList?msg=" + (affected > 0 ? "deleted" : "not_deleted"));
+  }
 }
+
