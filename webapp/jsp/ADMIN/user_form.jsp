@@ -38,6 +38,9 @@
             border-bottom: 3px solid #3498db !important;
             padding-bottom: 10px !important;
         }
+        .esse {
+        	font-size: 12px;
+        	color: #808080;        }
     </style>
 </head>
 <body>
@@ -67,9 +70,9 @@
                         
                         <div class="form-section">
                             <h3 class="form-section-title">기본 정보</h3>
-                            
+								<p class="esse"> * 필수 입력 사항입니다. </p>                            
                             <div class="form-group">
-                                <label class="form-label" for="employeeNo">사원번호 *</label>
+                                <label class="form-label" for="employeeNo">사원번호</label>
                                 <input type="text" class="form-input" id="employeeNo" name="employeeNo" 
                                        value="${nextEmployeeNo}" readonly>
                                 <small class="form-help">자동 생성됩니다</small>

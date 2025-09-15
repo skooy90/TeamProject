@@ -66,11 +66,14 @@
                     <!-- 기본 정보 섹션 -->
                     <div class="form-header">
                         <h2>BOM 기본 정보</h2>
+                        <c:if test="${mode != 'update'}">
+                    <p class="esse"> * 필수 선택사항입니다.. </p>
+                        </c:if>
                     </div>
                         
                     <div class="form-container">
                             <div class="form-group">
-                                <label for="bomNo">BOM번호 *</label>
+                                <label for="bomNo">BOM번호 </label>
                                 <input type="text" id="bomNo" name="bomNo" 
                                        value="${mode == 'update' ? bom.bomNo : '자동 생성'}"
                                        readonly required>
@@ -78,12 +81,13 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="standardCode">제품코드 *</label>
                                 <c:choose>
                                     <c:when test="${mode == 'update'}">
+                                <label for="standardCode">제품코드 </label>
                                         <input type="text" id="standardCode" name="standardCode" value="${bom.standardCode} - ${bom.stName}" readonly>
                                     </c:when>
                                     <c:otherwise>
+                                <label for="standardCode">제품코드 * </label>
                                         <select id="standardCode" name="standardCode" required>
                                             <option value="">제품을 선택하세요</option>
                                             <c:forEach var="standard" items="${standards}">
@@ -96,21 +100,14 @@
                         </div>
 
                             <div class="form-group">
-                                <label for="bomDescription">BOM 설명 *</label>
-                                <input type="text" id="bomDescription" name="bomDescription" 
-                                       value="${mode == 'update' ? bom.bomDescription : ''}"
-                                       placeholder="BOM 설명을 입력하세요" required>
-                                <div class="error-message" id="bomDescriptionError"></div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="bomType">BOM 유형 *</label>
                             <c:choose>
                                 <c:when test="${mode == 'update'}">
+                                <label for="bomType">BOM 유형 </label>
                                     <input type="text" id="bomType" name="bomType" value="${bom.bomType}" readonly>
                                 </c:when>
                                 <c:otherwise>
                                 <select id="bomType" name="bomType" required>
+                                <label for="bomType">BOM 유형 *</label>
                                     <option value="">유형을 선택하세요</option>
                                         <option value="원자재">원자재</option>
                                         <option value="반제품">반제품</option>
@@ -120,14 +117,6 @@
                             </c:choose>
                                 <div class="error-message" id="bomTypeError"></div>
                         </div>
-
-                            <div class="form-group">
-                                <label for="bomOrder">BOM 순서 *</label>
-                                <input type="number" id="bomOrder" name="bomOrder" 
-                                       value="${mode == 'update' ? bom.bomOrder : ''}"
-                                       min="1" placeholder="1" required>
-                                <div class="error-message" id="bomOrderError"></div>
-                            </div>
                             
                             <div class="form-group">
                                 <label for="bomImage">BOM 이미지</label>
@@ -585,7 +574,7 @@
             let isValid = true;
             
             // 필수 필드 검사
-            const requiredFields = ['standardCode', 'bomDescription', 'bomType', 'bomOrder'];
+            const requiredFields = ['standardCode', 'bomType'];
             requiredFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 const errorDiv = document.getElementById(fieldId + 'Error');
@@ -598,17 +587,6 @@
                     errorDiv.style.display = 'none';
                 }
             });
-            
-            // BOM 순서 검사
-            const bomOrder = document.getElementById('bomOrder');
-            const bomOrderError = document.getElementById('bomOrderError');
-            if (bomOrder.value && (isNaN(bomOrder.value) || parseInt(bomOrder.value) < 1)) {
-                bomOrderError.textContent = '1 이상의 숫자를 입력하세요.';
-                bomOrderError.style.display = 'block';
-                isValid = false;
-            } else {
-                bomOrderError.style.display = 'none';
-            }
             
             // 자재 검사
             const materialRows = document.querySelectorAll('.material-row');

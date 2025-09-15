@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -143,11 +143,23 @@ canvas {
 						</div>
 						<div class="card">
 							<h3>공지 사항</h3>
-							<ul class="notice">
-								<c:forEach var="n" items="${notices}">
-									<li>${n}</li>
-								</c:forEach>
-							</ul>
+							<c:choose>
+								<c:when test="${empty notices}">
+									<div class="no-data">등록된 공지가 없습니다.</div>
+								</c:when>
+								<c:otherwise>
+									<ul class="notice">
+										<c:forEach var="n" items="${notices}">
+											<li><a href="${ctx}/boardDetail?postNo=${n.postNo}">
+													${n.boTitle} </a> <span
+												style="float: right; color: #64748b; font-size: 12px;">
+													<fmt:formatDate value="${n.boCreationDate}"
+														pattern="yyyy-MM-dd" />
+											</span></li>
+										</c:forEach>
+									</ul>
+								</c:otherwise>
+							</c:choose>
 						</div>
 					</div>
 
@@ -155,7 +167,6 @@ canvas {
 			</div>
 		</div>
 	</div>
-
 
 	<script>
   // ----- 생산: Target vs Completed -----
@@ -241,61 +252,64 @@ canvas {
   });
   
   (function () {
-	    const total  = ${workTotal};
-	    const done   = ${workDone};
-	    const remain = ${workRemain};
-	    const rate   = ${workRate};
+	  // 서버 값 안전하게 숫자화
+const total  = ${empty workTotal ? 0 : workTotal};
+const done   = ${empty workDone  ? 0 : workDone};
+const remain = Math.max(0, total - done);
+const rate   = ${empty workRate  ? 0 : workRate};
 
-	    const centerText = {
-	      id: 'centerText',
-	      afterDraw(chart) {
-	        const {ctx} = chart;
-	        const p = chart.getDatasetMeta(0).data[0];
-	        if (!p) return;
-	        ctx.save();
-	        ctx.font = '700 28px sans-serif';
-	        ctx.fillStyle = '#111';
-	        ctx.textAlign = 'center';
-	        ctx.textBaseline = 'middle';
-	        ctx.fillText((rate || 0).toFixed(1) + '%', p.x, p.y);
-	        ctx.restore();
-	      }
-	    };
+	  // 도넛 중앙에 % 텍스트 표기
+	  const centerText = {
+	    id: 'centerText',
+	    afterDraw(chart) {
+	      const arc = chart.getDatasetMeta(0).data?.[0];
+	      if (!arc) return;
+	      const {ctx} = chart;
+	      ctx.save();
+	      ctx.font = '700 28px sans-serif';
+	      ctx.fillStyle = '#111';
+	      ctx.textAlign = 'center';
+	      ctx.textBaseline = 'middle';
+	      ctx.fillText((rate || 0).toFixed(1) + '%', arc.x, arc.y);
+	      ctx.restore();
+	    }
+	  };
 
-	    const canvas = document.getElementById('workProgressChart');
-	    const c2d = canvas.getContext('2d');
-
-	    new Chart(c2d, {
-	      type: 'doughnut',
-	      data: {
-	        labels: ['완료', '잔여'],
-	        datasets: [{
-	          data: [done, Math.max(0, total - done)],
-	          backgroundColor: ['rgba(75, 192, 192, 0.9)', 'rgba(229, 231, 235, 0.9)'],
-	          borderColor: ['rgba(75, 192, 192, 1)', 'rgba(229, 231, 235, 1)'],
-	          borderWidth: 1,
-	          cutout: '68%'
-	        }]
-	      },
-	      options: {
-	        responsive: true,
-	        maintainAspectRatio: false,
-	        plugins: {
-	          legend: { position: 'bottom' },
-	          tooltip: {
-	            callbacks: {
-	              // ⬇⬇ 여기만 변경 ⬇⬇
-	              label: function (c) {
-	                var pct = total ? Math.round(c.parsed * 100 / total) : 0;
-	                return c.label + ': ' + c.parsed + ' (' + pct + '%)';
-	              }
+	  const ctx = document.getElementById('workProgressChart').getContext('2d');
+	  new Chart(ctx, {
+	    type: 'doughnut',
+	    data: {
+	      labels: ['완료', '잔여'],
+	      datasets: [{
+	        data: [done, remain],
+	        backgroundColor: ['rgba(75, 192, 192, 0.9)', 'rgba(229, 231, 235, 0.9)'],
+	        borderColor:     ['rgba(75, 192, 192, 1)',   'rgba(229, 231, 235, 1)'],
+	        borderWidth: 1,
+	        cutout: '68%'
+	      }]
+	    },
+	    options: {
+	      responsive: true,
+	      maintainAspectRatio: false,
+	      plugins: {
+	        legend: { position: 'bottom' },
+	        tooltip: {
+	          callbacks: {
+	            label: (c) => {
+	              const val = c.parsed;
+	              const pct = total ? Math.round(val * 100 / total) : 0;
+	              return `${c.label}: ${val} (${pct}%)`;
 	            }
 	          }
 	        }
-	      },
-	      plugins: [centerText]
-	    });
-	  })();
+	      }
+	    },
+	    plugins: [centerText]
+	  });
+	})();
+  console.log({ total, done, remain, rate });
+  
 </script>
 </body>
 </html>
+

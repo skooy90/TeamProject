@@ -72,10 +72,11 @@
                 <div class="form-container">
                     <form id="processForm" action="${pageContext.request.contextPath}/process/${mode == 'update' ? 'update' : 'insert'}" method="post">
                         <!-- 제품코드 -->
+                        <p class="esse"> * 필수 선택 사항입니다. </p>
                         <div class="form-group">
-                            <label for="standardCode">제품코드 <span class="required">*</span></label>
                             <c:choose>
                                 <c:when test="${mode == 'update'}">
+                            <label for="standardCode">제품코드</label>
                                     <!-- 수정 모드: readonly로 표시 -->
                                     <input type="text" 
                                            id="standardCode" 
@@ -85,6 +86,7 @@
                                 </c:when>
                                 <c:otherwise>
                                     <!-- 등록 모드: 드롭다운 선택 -->
+                            <label for="standardCode">제품코드 <span class="required">*</span></label>
                                     <select id="standardCode" name="standardCode" required>
                                         <option value="">제품을 선택하세요</option>
                                         <c:forEach var="standard" items="${standardList}">
@@ -111,18 +113,7 @@
                             <div class="error-message" id="routingTypeError"></div>
                         </div>
 
-                        <!-- 라우팅 설명 -->
-                        <div class="form-group">
-                            <label for="routingDescription">라우팅 설명</label>
-                            <textarea id="routingDescription" 
-                                      name="routingDescription" 
-                                      placeholder="라우팅에 대한 상세한 설명을 입력하세요"
-                                      readonly>${mode == 'update' ? process.prDescription : '라우팅 타입을 선택하면 자동으로 생성됩니다.'}</textarea>
-                            <div class="help-text">
-                                라우팅 설명은 선택한 제품과 타입에 따라 자동으로 생성됩니다.
-                            </div>
-                        </div>
-
+ 
                         <!-- 버튼 섹션 -->
                         <div class="button-section">
                             <button type="submit" class="btn btn-primary">${mode == 'update' ? '수정' : '등록'}</button>

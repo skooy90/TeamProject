@@ -76,7 +76,6 @@
                                 <th>제품코드</th>
                                 <th>BOM명</th>
                                 <th>BOM 유형</th>
-                                <th>BOM 순서</th>
                                 <th>관리</th>
                             </tr>
                         </thead>
@@ -89,11 +88,10 @@
                                             <td>${bom.standardCode}</td>
                                             <td><a href="${pageContext.request.contextPath}/bom/detail?code=${bom.standardCode}" class="detail-link">${bom.bomDescription}</a></td>
                                             <td>
-                                                <span class="routing-badge ${bom.bomType == '원자재' ? 'routing-raw' : bom.bomType == '반제품' ? 'routing-semi' : 'routing-finish'}">
-                                                    ${bom.bomType}
+                                                <span class="routing-badge ${bom.stType == '원자재' ? 'routing-raw' : bom.bomType == '반제품' ? 'routing-semi' : 'routing-finish'}">
+                                                    ${bom.stType == 'SEMI' ? '반제품' : '완제품'}
                                                 </span>
                                             </td>
-                                            <td>${bom.bomOrder}</td>
                                             <td class="action-links">
                                                 <a href="${pageContext.request.contextPath}/bom/form?code=${bom.standardCode}" class="edit">수정</a>
                                                 <a href="${pageContext.request.contextPath}/bom/delete?code=${bom.standardCode}" class="delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>

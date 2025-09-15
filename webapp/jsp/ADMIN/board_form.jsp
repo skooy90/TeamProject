@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <%
     String ctx = request.getContextPath();
 %>
@@ -8,8 +10,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시글 등록 - MES 시스템</title>
+    
     <link rel="stylesheet" href="<%=ctx%>/Header_Side/style.css">
     <link rel="stylesheet" href="<%=ctx%>/css/admin/board_management.css">
+    <c:set var="ctx" value="${pageContext.request.contextPath}" />
+    
+    
     <style>
         /* 인라인 스타일로 기본 레이아웃 강제 적용 */
         .main-content {

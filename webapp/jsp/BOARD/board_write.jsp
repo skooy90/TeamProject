@@ -26,6 +26,9 @@
             height: calc(100vh - 60px) !important;
             background-color: #f4f7f9 !important;
         }
+        .esse {
+        	font-size: 12px;
+        	color: #808080;        }
     </style>
 </head>
 <body>
@@ -47,9 +50,10 @@
                     <form method="POST" action="<%=ctx%>/boardAction" class="write-form">
                         <input type="hidden" name="action" value="write">
                         <input type="hidden" name="postNo" value="${nextPostNo}">
-                        <input type="hidden" name="employeeNo" value="A0001">
-                        <input type="hidden" name="boWriter" value="관리자">
-
+                        <input type="hidden" name="employeeNo" value="${sessionScope.empNo}">
+                        <input type="hidden" name="boWriter" value="${sessionScope.empName}">
+						<p class="esse"> * 필수 입력 사항입니다. </p>  
+						<br>
                         <div class="form-group">
                             <label class="form-label" for="boCategory">카테고리 *</label>
                             <select class="form-select" id="boCategory" name="boCategory" required>

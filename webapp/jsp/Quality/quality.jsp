@@ -79,6 +79,7 @@ h1 {
 	background: #22c55e;
 	color: #fff;
 	box-shadow: 0 2px 8px rgba(34, 197, 94, .25);
+	text-decoration: none;
 }
 
 .btn-primary:hover, .btn-success:hover {

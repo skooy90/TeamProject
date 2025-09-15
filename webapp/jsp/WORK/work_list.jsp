@@ -70,12 +70,15 @@ h1 {
 
 .btn-primary {
 	background: #1677ff;
-	color: #fff
+	color: #fff;
+	text-decoration: none;
 }
 
 .btn-success {
 	background: #22c55e;
-	color: #fff
+	color: #fff;
+	text-decoration: none;
+	
 }
 
 .table-responsive {
@@ -84,6 +87,9 @@ h1 {
 	border-radius: 10px
 }
 
+.prod-link {
+	text-decoration: none;
+}
 /* 표 */
 table {
 	width: 100%;
@@ -256,27 +262,25 @@ th:nth-child(13), td:nth-child(13) {
 										<tr>
 											<td>${w.workNo}</td>
 											<td>${w.productionNo}</td>
-											<td>
-											<c:choose>
-											<c:when test="${not empty w.standardCode}">
-											  <a class="prod-link"
-											     href="${pageContext.request.contextPath}/bom/detail?code=${w.standardCode}"
-											     title="BOM 상세 보기">${w.stName}</a>
-											</c:when>
-											<c:otherwise>
+											<td><c:choose>
+													<c:when test="${not empty w.standardCode}">
+														<a class="prod-link"
+															href="${pageContext.request.contextPath}/bom/detail?code=${w.standardCode}"
+															title="BOM 상세 보기">${w.stName}</a>
+													</c:when>
+													<c:otherwise>
 											  ${w.stName}
 											</c:otherwise>
-											</c:choose>
-											</td>
-																						
+												</c:choose></td>
+
 											<td>${w.employeeNo}</td>
 											<td class="truncate"><fmt:formatDate
 													value="${w.woSchedule}" pattern="yyyy-MM-dd" /></td>
 
 											<td>${w.woQuantity}</td>
 											<td>${w.woCompleted}</td>
-											
-										
+
+
 											<td class="cell-actions"><a
 												href="${ctx}/work/form?no=${w.workNo}">수정</a> <a
 												class="delete" href="${ctx}/work/delete?no=${w.workNo}"
@@ -290,21 +294,21 @@ th:nth-child(13), td:nth-child(13) {
 				</div>
 
 				<!-- 차트 -->
-<!-- 				<div class="charts"> -->
-<!-- 					<div class="chart-card"> -->
-<%-- 						<canvas id="amountChart"></canvas> --%>
-<!-- 					</div> -->
-<!-- 					<div class="chart-card"> -->
-<%-- 						<canvas id="statusChart"></canvas> --%>
-<!-- 					</div> -->
-					<!-- 					<div class="chart-card" style="grid-column: 1/-1"> -->
-					<%-- 						<canvas id="periodChart"></canvas> --%>
-					<!-- 					</div> -->
-				</div>
-
+				<!-- 				<div class="charts"> -->
+				<!-- 					<div class="chart-card"> -->
+				<%-- 						<canvas id="amountChart"></canvas> --%>
+				<!-- 					</div> -->
+				<!-- 					<div class="chart-card"> -->
+				<%-- 						<canvas id="statusChart"></canvas> --%>
+				<!-- 					</div> -->
+				<!-- 					<div class="chart-card" style="grid-column: 1/-1"> -->
+				<%-- 						<canvas id="periodChart"></canvas> --%>
+				<!-- 					</div> -->
 			</div>
+
 		</div>
 	</div>
+
 
 	<!-- 데이터 직렬화 -->
 	<script>

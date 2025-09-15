@@ -24,15 +24,15 @@
                 <!-- 페이지 헤더 -->
                 <div class="page-header">
                     <div class="header-info">
-                        <h1 class="page-title">${bom.bomDescription}</h1>
+                        <h1 class="page-title">${bom.stName}</h1>
                         <div class="product-info">
                             <span>제품코드: ${bom.standardCode}</span>
-                            <span class="routing-type">${bom.stType == 'SEMI' ? '반제품 라우팅' : '완제품 라우팅'}</span>
+                            <span class="routing-type">${bom.stType == 'SEMI' ? '반제품 BOM' : '완제품 BOM'}</span>
                             <span>총 공정 단계: ${bomSteps.size()}단계</span>
                         </div>
                     </div>
                     <div class="action-buttons">
-                        <a href="${pageContext.request.contextPath}/bom/form?code=${bom.standardCode}" class="btn btn-warning">라우팅 수정</a>
+                        <a href="${pageContext.request.contextPath}/bom/form?code=${bom.standardCode}" class="btn btn-warning">BOM 수정</a>
                         <a href="${pageContext.request.contextPath}/bom/delete?code=${bom.standardCode}" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
                         <a href="${pageContext.request.contextPath}/bom" class="btn btn-secondary">목록으로</a>
                     </div>
@@ -41,7 +41,7 @@
                 <!-- 기본 정보 카드 -->
                 <div class="cards-container">
                     <div class="card">
-                        <h3 class="card-title">라우팅 기본 정보</h3>
+                        <h3 class="card-title">BOM 기본 정보</h3>
                         <div class="info-row">
                             <span class="info-label">제품코드:</span>
                             <span class="info-value">${bom.standardCode}</span>
@@ -51,7 +51,7 @@
                             <span class="info-value">${bom.stName}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">라우팅 타입:</span>
+                            <span class="info-label">제품 타입:</span>
                             <span class="info-value">${bom.stType == 'SEMI' ? '반제품' : '완제품'}</span>
                         </div>
                         <div class="info-row">

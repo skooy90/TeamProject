@@ -127,12 +127,12 @@
 
     <script>
         // 메시지 표시
-        <c:if test="${not empty success}">
-            alert('${success}');
-        </c:if>
-        <c:if test="${not empty error}">
-            alert('${error}');
-        </c:if>
+//         <c:if test="${not empty success}">
+//             alert('${success}');
+//         </c:if>
+//         <c:if test="${not empty error}">
+//             alert('${error}');
+//         </c:if>
 
         // 수정 모드 토글
         function editBoard() {
