@@ -371,6 +371,25 @@ public class ProductionDAO {
 		        } catch (Exception e) { e.printStackTrace(); }
 		        return out;
 		    }
-			
-			
+		    public int setCompleted(String productionNo, int value) {
+		        String sql = "UPDATE PRODUCTION SET PR_COMPLETED = ? WHERE PRODUCTION_NO = ?";
+		        try (Connection c = DBManager.getConnection();
+		             PreparedStatement p = c.prepareStatement(sql)) {
+		            p.setInt(1, value);
+		            p.setString(2, productionNo);
+		            return p.executeUpdate();
+		        } catch (Exception e) { e.printStackTrace(); }
+		        return 0;
+		    }
+		    public int getTargetByProductionNo(String productionNo) {
+		        String sql = "SELECT PR_TARGET FROM PRODUCTION WHERE PRODUCTION_NO = ?";
+		        try (Connection c = DBManager.getConnection();
+		             PreparedStatement p = c.prepareStatement(sql)) {
+		            p.setString(1, productionNo);
+		            try (ResultSet rs = p.executeQuery()) {
+		                if (rs.next()) return rs.getInt(1);
+		            }
+		        } catch (Exception e) { e.printStackTrace(); }
+		        return 0;
+		    }
 }

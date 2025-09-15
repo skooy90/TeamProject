@@ -308,5 +308,15 @@ public class WorkDAO {
 
 	        return list;
 	    }
-	
+	   public int sumCompletedByProduction(String productionNo) {
+		    String sql = "SELECT COALESCE(SUM(WO_COMPLETED),0) FROM WORK WHERE PRODUCTION_NO = ?";
+		    try (Connection c = DBManager.getConnection();
+		         PreparedStatement p = c.prepareStatement(sql)) {
+		        p.setString(1, productionNo);
+		        try (ResultSet r = p.executeQuery()) {
+		            if (r.next()) return r.getInt(1);
+		        }
+		    } catch (Exception e) { e.printStackTrace(); }
+		    return 0;
+		}
 }

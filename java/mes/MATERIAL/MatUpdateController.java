@@ -38,25 +38,25 @@ public class MatUpdateController extends HttpServlet {
             // 유효성 검사
             if (materialCode == null || materialCode.trim().isEmpty()) {
                 request.getSession().setAttribute("error", "재고코드가 필요합니다.");
-                response.sendRedirect("/TeamProject/material");
+                response.sendRedirect(request.getContextPath() + "/material");
                 return;
             }
             
             if (standardCode == null || standardCode.trim().isEmpty()) {
                 request.getSession().setAttribute("error", "제품코드를 선택해주세요.");
-                response.sendRedirect("/TeamProject/material/form?code=" + materialCode);
+                response.sendRedirect(request.getContextPath() + "/material/form?code=" + materialCode);
                 return;
             }
             
             if (employeeNo == null || employeeNo.trim().isEmpty()) {
                 request.getSession().setAttribute("error", "담당자를 선택해주세요.");
-                response.sendRedirect("/TeamProject/material/form?code=" + materialCode);
+                response.sendRedirect(request.getContextPath() + "/material/form?code=" + materialCode);
                 return;
             }
             
             if (quantity < 0) {
                 request.getSession().setAttribute("error", "재고량은 0 이상이어야 합니다.");
-                response.sendRedirect("/TeamProject/material/form?code=" + materialCode);
+                response.sendRedirect(request.getContextPath() + "/material/form?code=" + materialCode);
                 return;
             }
             
@@ -81,6 +81,6 @@ public class MatUpdateController extends HttpServlet {
             request.getSession().setAttribute("error", "재고 수정 중 오류가 발생했습니다: " + e.getMessage());
         }
         
-        response.sendRedirect("/TeamProject/material");
+        response.sendRedirect(request.getContextPath() + "/material");
     }
 }

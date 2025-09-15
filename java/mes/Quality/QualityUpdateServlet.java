@@ -1,4 +1,3 @@
-// src/main/java/com/mes/Controller/Quality/QualityUpdateServlet.java
 package mes.Controller.Quality;
 
 import mes.DAO.QualityDAO;
@@ -13,6 +12,7 @@ import java.sql.Timestamp;
 
 @WebServlet("/quality/update")
 public class QualityUpdateServlet extends HttpServlet {
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -25,25 +25,50 @@ public class QualityUpdateServlet extends HttpServlet {
         d.setStandardCode(req.getParameter("standardCode"));
         d.setEmployeeNo(req.getParameter("employeeNo"));
         d.setQuResult(req.getParameter("quResult"));
-        d.setQuQuantity(Integer.parseInt(req.getParameter("quQuantity")));
-        d.setDefectQuantity(Integer.parseInt(req.getParameter("defectQuantity")));
 
-        // Date (yyyy-MM-dd)
-        d.setQuManufactureDate(Date.valueOf(req.getParameter("quManufactureDate")));
+        // 숫자 파싱(빈값/잘못된 값은 0)
+        d.setQuQuantity(parseIntSafe(req.getParameter("quQuantity")));
+        d.setDefectQuantity(parseIntSafe(req.getParameter("defectQuantity")));
 
-        // Timestamp (accepts "yyyy-MM-ddTHH:mm" or "yyyy-MM-dd HH:mm" or with seconds)
-        String ins = req.getParameter("inspectionDate"); // e.g. 2025-01-17T16:30
-        Timestamp inspectionTs = null;
-        if (ins != null && !ins.isBlank()) {
-            ins = ins.trim().replace('T', ' '); // 2025-01-17 16:30
-            if (ins.length() == 16) {           // yyyy-MM-dd HH:mm
-                ins += ":00";                   // -> yyyy-MM-dd HH:mm:00
-            }
-            inspectionTs = Timestamp.valueOf(ins);
+        // 제조일: input type="date" -> yyyy-MM-dd (빈값이면 null)
+        d.setQuManufactureDate(parseSqlDateSafe(req.getParameter("quManufactureDate")));
+
+        // 검사일시: input type="datetime-local" -> yyyy-MM-ddTHH:mm (빈값이면 null)
+        d.setInspectionDate(parseTimestampSafe(req.getParameter("inspectionDate")));
+
+        int ok = QualityDAO.getInstance().update(d);
+
+        resp.sendRedirect(req.getContextPath() + "/qualityList" + (ok == 1 ? "" : "?err=update"));
+    }
+
+    private int parseIntSafe(String s) {
+        try {
+            if (s == null || s.isBlank()) return 0;
+            return Integer.parseInt(s.trim());
+        } catch (Exception e) {
+            return 0;
         }
-        d.setInspectionDate(inspectionTs);
+    }
 
-        QualityDAO.getInstance().update(d);
-        resp.sendRedirect(req.getContextPath() + "/qualityList");
+    private Date parseSqlDateSafe(String s) {
+        try {
+            if (s == null || s.isBlank()) return null; // 빈값이면 null
+            return Date.valueOf(s.trim());             // yyyy-MM-dd만 허용
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Timestamp parseTimestampSafe(String s) {
+        try {
+            if (s == null || s.isBlank()) return null; // 빈값이면 null
+            s = s.trim().replace('T', ' ');            // yyyy-MM-dd HH:mm
+            if (s.length() == 16) s += ":00";          // 초가 없으면 보정
+            int dot = s.indexOf('.');
+            if (dot > 0) s = s.substring(0, dot);      // 소수점(밀리초) 제거
+            return Timestamp.valueOf(s);               // yyyy-MM-dd HH:mm[:ss]
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -31,7 +31,7 @@ public class MatDeleteController extends HttpServlet {
             
             if (materialCode == null || materialCode.trim().isEmpty()) {
                 request.getSession().setAttribute("error", "재고코드가 필요합니다.");
-                response.sendRedirect("/TeamProject/material");
+                response.sendRedirect(request.getContextPath() + "/material");
                 return;
             }
             
@@ -48,6 +48,6 @@ public class MatDeleteController extends HttpServlet {
             request.getSession().setAttribute("error", "재고 삭제 중 오류가 발생했습니다: " + e.getMessage());
         }
         
-        response.sendRedirect("/TeamProject/material");
+        response.sendRedirect(request.getContextPath() + "/material");
     }
 }

@@ -11,32 +11,40 @@ import java.sql.Date;
 
 @WebServlet("/production/insert")
 public class ProductionInsertServlet extends HttpServlet {
-    @Override // ProductionInsertServlet.java (핵심만)
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ProductionDTO dto = new ProductionDTO();
-        dto.setStandardCode(req.getParameter("standardCode"));
-        dto.setEmployeeNo(req.getParameter("employeeNo"));
-        dto.setPrStart(java.sql.Date.valueOf(req.getParameter("prStart")));
-        dto.setPrEnd(java.sql.Date.valueOf(req.getParameter("prEnd")));
-        dto.setPrTarget(Integer.parseInt(req.getParameter("prTarget")));
-        dto.setPrCompleted(Integer.parseInt(req.getParameter("prCompleted")));
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+
+        ProductionDTO d = new ProductionDTO();
+        d.setStandardCode(req.getParameter("standardCode"));
+        d.setEmployeeNo(req.getParameter("employeeNo"));
+
+        // 날짜는 required라면 그대로, 선택 사항이면 isBlank 체크 후 null 허용
+        d.setPrStart(java.sql.Date.valueOf(req.getParameter("prStart")));
+        d.setPrEnd(java.sql.Date.valueOf(req.getParameter("prEnd")));
+
+        // ✔ 안전 파싱
+        d.setPrTarget(getInt(req, "prTarget", 0));
+        d.setPrCompleted(getInt(req, "prCompleted", 0));
 
         try {
-            int r = ProductionDAO.getInstance().insert(dto);
-            resp.sendRedirect(req.getContextPath() + "/productionList");
+            int ok = ProductionDAO.getInstance().insert(d);
+            resp.sendRedirect(req.getContextPath() + "/productionList" + (ok == 1 ? "" : "?err=insert"));
         } catch (Exception e) {
-            String msg;
-            String code = e.getMessage();
-            if ("STANDARD_CODE_NOT_FOUND".equals(code)) {
-                msg = "존재하지 않는 제품코드입니다. 기준관리에서 등록된 제품코드를 선택해 주세요.";
-            } else if ("EMPLOYEE_NO_NOT_FOUND".equals(code)) {
-                msg = "존재하지 않는 담당자 사번입니다.";
-            } else {
-                msg = "등록 중 오류가 발생했습니다: " + e.getMessage();
-            }
-            req.setAttribute("error", msg);
-            req.setAttribute("prod", dto); // 사용자가 입력한 값 유지
-            req.getRequestDispatcher("/jsp/Product//production_form.jsp").forward(req, resp);
+            e.printStackTrace();
+            resp.sendRedirect(req.getContextPath() + "/productionList?err=insert_exc");
+        }
+    }
+
+    private int getInt(HttpServletRequest req, String name, int def) {
+        String v = req.getParameter(name);
+        if (v == null || v.isBlank()) return def;
+        try {
+            return Integer.parseInt(v.trim());
+        } catch (NumberFormatException e) {
+            return def;
         }
     }
 }

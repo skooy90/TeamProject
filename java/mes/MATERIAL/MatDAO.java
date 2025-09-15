@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mes.DTO.MaterialDTO;
+import mes.DTO.QualityDTO;
 import mes.DTO.StandardDTO;
 import mes.DTO.UsersDTO;
 import mes.util.DBManager;
@@ -626,5 +627,134 @@ public class MatDAO {
         }
         
         return totalList;
+    }
+    
+    // ========== 품질관리 연동 메서드들 ==========
+    
+    // 품질관리에서 검사 완료된 항목들 조회 (재고 등록용)
+    public List<QualityDTO> selectCompletedInspections() {
+        List<QualityDTO> qualityList = new ArrayList<>();
+        
+        // 품질관리 테이블에서 아직 재고로 등록되지 않은 항목만 조회 (QU_RESULT가 NULL인 것)
+        String sql = "SELECT q.QUALITY_NO, q.STANDARD_CODE, q.QU_QUANTITY, q.QU_MANUFACTURE_DATE, " +
+                    "q.EMPLOYEE_NO, q.INSPECTION_DATE, s.ST_NAME, u.US_NAME " +
+                    "FROM QUALITY q " +
+                    "JOIN STANDARD s ON q.STANDARD_CODE = s.STANDARD_CODE " +
+                    "JOIN USERS u ON q.EMPLOYEE_NO = u.EMPLOYEE_NO " +
+                    "WHERE q.QU_RESULT IS NULL " +
+                    "ORDER BY q.INSPECTION_DATE DESC";
+        
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            
+            System.out.println("=== 재고 등록용 품질관리 데이터 ===");
+            while (rs.next()) {
+                QualityDTO quality = new QualityDTO();
+                quality.setQualityNo(rs.getString("QUALITY_NO"));
+                quality.setStandardCode(rs.getString("STANDARD_CODE"));
+                quality.setQuQuantity(rs.getInt("QU_QUANTITY"));
+                quality.setQuManufactureDate(rs.getDate("QU_MANUFACTURE_DATE"));
+                quality.setEmployeeNo(rs.getString("EMPLOYEE_NO"));
+                quality.setInspectionDate(rs.getTimestamp("INSPECTION_DATE"));
+                quality.setStName(rs.getString("ST_NAME"));
+                
+                System.out.println("추가된 검사번호: " + quality.getQualityNo() + 
+                                 ", 제품명: " + quality.getStName() + 
+                                 ", 수량: " + quality.getQuQuantity());
+                
+                qualityList.add(quality);
+            }
+            System.out.println("=== 총 " + qualityList.size() + "개 항목 조회됨 ===");
+            
+        } catch (Exception e) {
+            System.out.println("재고 등록용 품질관리 데이터 조회 오류: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, pstmt, rs);
+        }
+        
+        return qualityList;
+    }
+    
+    // 특정 검사번호의 품질관리 정보 조회
+    public QualityDTO selectQualityByNo(String qualityNo) {
+        QualityDTO quality = null;
+        String sql = "SELECT q.*, s.ST_NAME " +
+                    "FROM QUALITY q " +
+                    "JOIN STANDARD s ON q.STANDARD_CODE = s.STANDARD_CODE " +
+                    "WHERE q.QUALITY_NO = ?";
+        
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, qualityNo);
+            rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                quality = new QualityDTO();
+                quality.setQualityNo(rs.getString("QUALITY_NO"));
+                quality.setWorkNo(rs.getString("WORK_NO"));
+                quality.setStandardCode(rs.getString("STANDARD_CODE"));
+                quality.setEmployeeNo(rs.getString("EMPLOYEE_NO"));
+                quality.setQuResult(rs.getString("QU_RESULT"));
+                quality.setQuQuantity(rs.getInt("QU_QUANTITY"));
+                quality.setQuManufactureDate(rs.getDate("QU_MANUFACTURE_DATE"));
+                quality.setDefectQuantity(rs.getInt("DEFECT_QUANTITY"));
+                quality.setInspectionDate(rs.getTimestamp("INSPECTION_DATE"));
+                quality.setCreateDate(rs.getDate("CREATE_DATE"));
+                quality.setUpdateDate(rs.getDate("UPDATE_DATE"));
+                quality.setStName(rs.getString("ST_NAME"));
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, pstmt, rs);
+        }
+        
+        return quality;
+    }
+    
+    // 품질관리 완료된 항목을 재고로 등록
+    public int insertMaterialFromQuality(String qualityNo, String employeeNo) {
+        String prefix = "MA";
+        // 1. 품질관리 정보 조회
+        QualityDTO quality = selectQualityByNo(qualityNo);
+        if (quality == null) {
+            return 0;
+        }
+        
+        // 2. 재고 등록 (LOT번호 = MATERIAL_CODE, 제품코드 = STANDARD_CODE)
+        String sql = "INSERT INTO MATERIAL (MATERIAL_CODE, STANDARD_CODE, EMPLOYEE_NO, MA_QUANTITY, MA_CREATION_DATE, MA_UPDATE_DATE) " +
+                    "VALUES ('" + prefix + "' || LPAD(SEQ_MATERIAL_CODE.NEXTVAL, 4, '0'), ?, ?, ?, SYSDATE, SYSDATE)";
+        
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, quality.getStandardCode()); // STANDARD_CODE = 제품코드
+            pstmt.setString(2, employeeNo); // 담당자
+            pstmt.setInt(3, quality.getQuQuantity()); // MA_QUANTITY = 양품수량
+            
+            int result = pstmt.executeUpdate();
+            
+            // 3. 재고 등록 성공 시 품질관리 테이블의 QU_RESULT를 'REGISTERED'로 업데이트
+            if (result > 0) {
+                String updateSql = "UPDATE QUALITY SET QU_RESULT = 'REGISTERED' WHERE QUALITY_NO = ?";
+                PreparedStatement updatePstmt = conn.prepareStatement(updateSql);
+                updatePstmt.setString(1, qualityNo);
+                updatePstmt.executeUpdate();
+                updatePstmt.close();
+            }
+            
+            return result;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        } finally {
+            closeResources(conn, pstmt, null);
+        }
     }
 }

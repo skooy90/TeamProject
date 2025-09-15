@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import mes.DTO.MaterialDTO;
 import mes.DTO.StandardDTO;
 import mes.DTO.UsersDTO;
+import mes.DTO.QualityDTO;
 
 @WebServlet("/material/form")
 public class MatFormController extends HttpServlet {
@@ -35,11 +36,8 @@ public class MatFormController extends HttpServlet {
         try {
             String materialCode = request.getParameter("code");
             
-            // 제품 목록과 사용자 목록 조회 (드롭다운용)
-            List<StandardDTO> standardList = matDAO.selectAllStandards();
+            // 사용자 목록 조회 (담당자 선택용)
             List<UsersDTO> userList = matDAO.selectAllUsers();
-            
-            request.setAttribute("standardList", standardList);
             request.setAttribute("userList", userList);
             
             if (materialCode != null && !materialCode.trim().isEmpty()) {
@@ -54,7 +52,9 @@ public class MatFormController extends HttpServlet {
                     return;
                 }
             } else {
-                // 등록 모드
+                // 등록 모드 - 품질관리 완료된 검사 목록 조회
+                List<QualityDTO> qualityList = matDAO.selectCompletedInspections();
+                request.setAttribute("qualityList", qualityList);
                 request.setAttribute("mode", "insert");
             }
             

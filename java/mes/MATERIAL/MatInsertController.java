@@ -30,51 +30,51 @@ public class MatInsertController extends HttpServlet {
         
         try {
             // 파라미터 받기
-            String standardCode = request.getParameter("standardCode");
+            String qualityNo = request.getParameter("qualityNo");
             String employeeNo = request.getParameter("employeeNo");
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
             
             // 유효성 검사
-            if (standardCode == null || standardCode.trim().isEmpty()) {
-                request.getSession().setAttribute("error", "제품코드를 선택해주세요.");
-                response.sendRedirect("/TeamProject/material/form");
+            if (qualityNo == null || qualityNo.trim().isEmpty()) {
+                request.getSession().setAttribute("error", "검사번호를 선택해주세요.");
+                response.sendRedirect(request.getContextPath() + "/material/form");
                 return;
             }
             
             if (employeeNo == null || employeeNo.trim().isEmpty()) {
                 request.getSession().setAttribute("error", "담당자를 선택해주세요.");
-                response.sendRedirect("/TeamProject/material/form");
+                response.sendRedirect(request.getContextPath() + "/material/form");
                 return;
             }
             
-            if (quantity < 0) {
-                request.getSession().setAttribute("error", "재고량은 0 이상이어야 합니다.");
-                response.sendRedirect("/TeamProject/material/form");
-                return;
-            }
+            // 품질관리 정보로 재고 등록
+            int result = matDAO.insertMaterialFromQuality(qualityNo, employeeNo);
             
-           
-            
-            // MaterialDTO 생성
-            MaterialDTO material = new MaterialDTO();
-            material.setStandardCode(standardCode);
-            material.setEmployeeNo(employeeNo);
-            material.setMaQuantity(quantity);
-            
-            // DB에 등록
-            int result = matDAO.insertMaterial(material);
-            
+            String message;
             if (result > 0) {
-                request.getSession().setAttribute("success", "재고가 성공적으로 등록되었습니다.");
+                message = "재고가 성공적으로 등록되었습니다.";
             } else {
-                request.getSession().setAttribute("error", "재고 등록에 실패했습니다.");
+                message = "재고 등록에 실패했습니다. 해당 검사번호가 존재하지 않거나 이미 등록되었을 수 있습니다.";
             }
+            
+            // JavaScript로 알림창 띄우고 페이지 이동
+            response.setContentType("text/html; charset=utf-8");
+            response.getWriter().println("<script>");
+            response.getWriter().println("alert('" + message + "');");
+            response.getWriter().println("window.location.href='" + request.getContextPath() + "/material';");
+            response.getWriter().println("</script>");
+            return;
             
         } catch (Exception e) {
             e.printStackTrace();
-            request.getSession().setAttribute("error", "재고 등록 중 오류가 발생했습니다: " + e.getMessage());
+            String errorMessage = "재고 등록 중 오류가 발생했습니다: " + e.getMessage();
+            
+            // JavaScript로 오류 알림창 띄우고 페이지 이동
+            response.setContentType("text/html; charset=utf-8");
+            response.getWriter().println("<script>");
+            response.getWriter().println("alert('" + errorMessage + "');");
+            response.getWriter().println("window.location.href='" + request.getContextPath() + "/material/form';");
+            response.getWriter().println("</script>");
+            return;
         }
-        
-        response.sendRedirect("/TeamProject/material");
     }
 }

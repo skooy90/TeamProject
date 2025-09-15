@@ -102,23 +102,29 @@ public class QualityDAO {
     }
 
     public int update(QualityDTO d) {
-        String sql = "UPDATE QUALITY SET " +
-                "WORK_NO=?, STANDARD_CODE=?, EMPLOYEE_NO=?, " +
-                "QU_RESULT=?, QU_QUANTITY=?, QU_MANUFACTURE_DATE=?, DEFECT_QUANTITY=?, " +
-                "INSPECTION_DATE=?, UPDATE_DATE=SYSDATE " +
-                "WHERE QUALITY_NO=?";
+        String sql =  "UPDATE QUALITY " +
+        	    "   SET WORK_NO            = ?, " +
+        	    "       STANDARD_CODE      = NVL(?, STANDARD_CODE), " + // ★ null이면 기존값 유지
+        	    "       EMPLOYEE_NO        = ?, " +
+        	    "       QU_RESULT          = ?, " +
+        	    "       QU_QUANTITY        = ?, " +
+        	    "       QU_MANUFACTURE_DATE= ?, " +
+        	    "       DEFECT_QUANTITY    = ?, " +
+        	    "       INSPECTION_DATE    = ?, " +
+        	    "       UPDATE_DATE        = SYSDATE " +
+        	    " WHERE QUALITY_NO = ?";
         try (Connection c = DBManager.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             int i=1;
-            ps.setString(i++, d.getWorkNo());
-            ps.setString(i++, d.getStandardCode());
-            ps.setString(i++, d.getEmployeeNo());
-            ps.setString(i++, d.getQuResult());
-            ps.setInt(i++, d.getQuQuantity());
-            ps.setDate(i++, d.getQuManufactureDate());
-            ps.setInt(i++, d.getDefectQuantity());
-            ps.setTimestamp(i++, d.getInspectionDate());
-            ps.setString(i++, d.getQualityNo());
+            ps.setString(1, d.getWorkNo());
+            ps.setString(2, d.getStandardCode());   // null이면 NVL 덕분에 기존값으로 유지
+            ps.setString(3, d.getEmployeeNo());
+            ps.setString(4, d.getQuResult());
+            ps.setInt(5, d.getQuQuantity());
+            ps.setDate(6, d.getQuManufactureDate());
+            ps.setInt(7, d.getDefectQuantity());
+            ps.setTimestamp(8, d.getInspectionDate());
+            ps.setString(9, d.getQualityNo());
             return ps.executeUpdate();
         } catch (Exception e) { e.printStackTrace(); return 0; }
     }

@@ -21,7 +21,7 @@ public class ProductionDetailServlet extends HttpServlet {
         String no = req.getParameter("no");
         ProductionDTO prod = ProductionDAO.getInstance().findByNo(no);
         req.setAttribute("prod", prod);
-        req.getRequestDispatcher("/jsp/Production/production_detail.jsp").forward(req, resp);
+        req.getRequestDispatcher("/jsp/Product/production_detail.jsp").forward(req, resp);
     }
 }
 

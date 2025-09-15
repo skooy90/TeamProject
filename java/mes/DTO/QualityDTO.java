@@ -10,8 +10,8 @@ public class QualityDTO {
     private String employeeNo;          // 검사자 (FK)
     private String quResult;            // 검사 결과 (양품/불량)
     private int quQuantity;             // 양품 수량
-    private Date quManufactureDate;     // 제조일
     private int defectQuantity;         // 불량 수량
+    private Date quManufactureDate;     // 제조일
     private Timestamp inspectionDate;   // 검사일시
     private Date createDate;            // 생성일
     private Date updateDate;            // 수정일

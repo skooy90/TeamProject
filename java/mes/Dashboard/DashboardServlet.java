@@ -1,6 +1,7 @@
 // src/main/java/mes/Controller/Dashboard/DashboardServlet.java
 package mes.Controller.Dashboard;
 
+import mes.DAO.BoardManagementDAO;
 import mes.DAO.ProductionDAO;
 import mes.DAO.WorkDAO;
 import mes.DAO.QualityDAO;
@@ -27,13 +28,8 @@ public class DashboardServlet extends HttpServlet {
     // 5) 품질: 제품별 불량률 Top5 (불량 / (양품+불량))
     req.setAttribute("defectRateTop", QualityDAO.getInstance().defectRateByProductTopN(5));
 
-    // 6) 공지(더미)
-    List<String> notices = Arrays.asList(
-        "[공지] 10/5(일) 02:00~04:00 점검 예정",
-        "[안내] 원자재 RA0065 입고 지연",
-        "[공지] 보안 비밀번호 교체 캠페인"
-    );
-    req.setAttribute("notices", notices);
+    // 6) 공지
+    req.setAttribute("notices", BoardManagementDAO.getInstance().selectLatestNotices(5));
 
     req.getRequestDispatcher("/jsp/Dashboard/dashboard.jsp").forward(req, resp);
   }

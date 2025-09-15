@@ -28,4 +28,3 @@ public class ProductionFormServlet extends HttpServlet {
      req.getRequestDispatcher("/jsp/Product/production_form.jsp").forward(req, resp);
  }
 }
-
